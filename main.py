@@ -27,7 +27,8 @@ first_button_pos = (width // 2 - 50, height // 2 - 50)
 second_button_pos = (width // 2 - 50, height // 2)
 third_button_pos = (width // 2 - 50, height // 2 + 50)
 
-while True:
+run = True
+while run:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
