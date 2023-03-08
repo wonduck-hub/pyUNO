@@ -1,8 +1,9 @@
 import pygame
+import sys
 
 pygame.init()
 
-size = [800, 600]
+size = [1600, 900]
 screen = pygame.display.set_mode(size)
 
 title = "pyUNO"
@@ -11,59 +12,78 @@ pygame.display.set_caption(title)
 width = screen.get_width()
 height = screen.get_height()
 
-color_white = (255, 255, 255)
-color_light = (170, 170, 170)
-color_dark = (100, 100, 100)
-color_black = (0, 0, 0)
+colorWhite = (255, 255, 255)
+colorBlack = (0, 0, 0)
+colorGreen = (0, 80, 0)
+colorBlue = (0, 0, 100)
 
-small_font = pygame.font.SysFont('Corbel', 35)
+largeFont = pygame.font.SysFont('Corbel', 100)
+font = pygame.font.SysFont('Arial', 40)
 
 #rendering a text written in this font
-text_start = small_font.render('start', True, color_black)
-text_menu = small_font.render('menu', True, color_black)
-text_quit = small_font.render('quit', True, color_black)
+textGameName = largeFont.render("PyUNO", True, colorBlue)
 
-first_button_pos = (width // 2 - 50, height // 2 - 50)
-second_button_pos = (width // 2 - 50, height // 2)
-third_button_pos = (width // 2 - 50, height // 2 + 50)
+objects = []
+
+class Button():
+    def __init__(self, x, y, width, height, buttonText = 'button', onClickFunction = None, onPress = False):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.onClickFunction = onClickFunction
+        self.onePress = onPress
+        self.alreadyPressed = False
+        self.fillColors = {'nomal' : "#ffffff", 
+                           "hover" : "#666666", 
+                           "pressed" : "#333333"}
+        self.buttonSurface = pygame.Surface((self.width, self.height))
+        self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.buttonSurf = font.render(buttonText, True, (20, 20, 20))
+        objects.append(self)
+
+    def process(self):
+        mousePos = pygame.mouse.get_pos()
+        self.buttonSurface.fill(self.fillColors['nomal'])
+        if self.buttonRect.collidepoint(mousePos): #마우스와 충돌포인트가 충돌 확인
+            self.buttonSurface.fill(self.fillColors['hover'])
+            if pygame.mouse.get_pressed(num_buttons=3)[0]: #좌클릭
+                self.buttonSurface.fill(self.fillColors['pressed'])
+                if self.onePress:
+                    self.onClickFunction()
+                elif not self.alreadyPressed:
+                    self.onClickFunction()
+                    self.alreadyPressed = True
+            else:
+                self.alreadyPressed = False
+        self.buttonSurface.blit(self.buttonSurf, [
+            self.buttonRect.width/2 - self.buttonSurf.get_rect().width/2,
+            self.buttonRect.height/2 - self.buttonSurf.get_rect().height/2
+        ])
+        screen.blit(self.buttonSurface, self.buttonRect)
+
+def singlePlay():
+    pass
+
+def showMenu():
+    pass
+
+startButton = Button(30, 230, 140, 40, "start", singlePlay)
+menuButton = Button(30, 300, 140, 40, "menu", showMenu)
+quitButton = Button(30, 370, 140, 40, "quit", pygame.quit)
 
 run = True
 while run:
 
+    screen.fill(colorGreen)
+    screen.blit(textGameName, [width // 2 - 100, 70])
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
+            sys.exit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if third_button_pos[0] <= mouse[0] <= third_button_pos[0] + 60 and third_button_pos[1] <= mouse[1] <= third_button_pos[1] + 40:
-                #quit버튼을 눌렀을 때
-                pygame.quit()
-
-    mouse = pygame.mouse.get_pos()
-    screen.fill(color_white)
-
-    #버튼과 배경 겹치기
-    #마우스 올리면 색 변경
-    if width // 2 - 50 <= mouse[0] <= width // 2 + 15 and first_button_pos[1] <= mouse[1] <= height // 2:
-        pygame.draw.rect(screen, color_light, first_button_pos + (65, 40))
-
-    else:
-        pygame.draw.rect(screen, color_dark, first_button_pos + (65, 40))
-
-    if width // 2 - 50 <= mouse[0] <= width // 2 + 30 and second_button_pos[1] <= mouse[1] <= height // 2 + 40:
-        pygame.draw.rect(screen, color_light, second_button_pos + (80, 40))
-
-    else:
-        pygame.draw.rect(screen, color_dark, second_button_pos + (80, 40))
-
-    if width // 2 - 50 <= mouse[0] <= width // 2 + 10 and third_button_pos[1] <= mouse[1] <= height // 2 + 90:
-        pygame.draw.rect(screen, color_light, third_button_pos + (60, 40))
-
-    else:
-        pygame.draw.rect(screen, color_dark, third_button_pos + (60, 40))
-
-    #글 출력
-    screen.blit(text_start, first_button_pos)
-    screen.blit(text_menu, second_button_pos)
-    screen.blit(text_quit, third_button_pos)
-    pygame.display.update()
+    for obj in objects:
+        obj.process()
+    
+    pygame.display.flip()
