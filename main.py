@@ -72,8 +72,7 @@ startButton = Button(30, 230, 140, 40, "start", singlePlay)
 menuButton = Button(30, 300, 140, 40, "menu", showMenu)
 quitButton = Button(30, 370, 140, 40, "quit", pygame.quit)
 
-run = True
-while run:
+while True:
 
     screen.fill(colorGreen)
     screen.blit(textGameName, [width // 2 - 100, 70])
