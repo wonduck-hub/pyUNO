@@ -3,7 +3,7 @@ import sys
 
 pygame.init()
 
-size = [1600, 900]
+size = [700, 450]
 screen = pygame.display.set_mode(size)
 
 title = "pyUNO"
