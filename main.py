@@ -40,7 +40,7 @@ class Button():
         self.buttonSurface = pygame.Surface((self.width, self.height))
         self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.buttonSurf = font.render(buttonText, True, (20, 20, 20))
-        objects.append(self)
+        #objects.append(self)
 
     def process(self):
         mousePos = pygame.mouse.get_pos()
@@ -71,6 +71,10 @@ def showMenu():
 startButton = Button(30, 230, 140, 40, "start", singlePlay)
 menuButton = Button(30, 300, 140, 40, "menu", showMenu)
 quitButton = Button(30, 370, 140, 40, "quit", pygame.quit)
+
+objects.append(startButton)
+objects.append(menuButton)
+objects.append(quitButton)
 
 while True:
 
