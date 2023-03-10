@@ -23,7 +23,7 @@ font = pygame.font.SysFont('Arial', 40)
 #rendering a text written in this font
 textGameName = largeFont.render("PyUNO", True, colorBlue)
 
-objects = []
+buttons = []
 
 class Button():
     def __init__(self, x, y, width, height, buttonText = 'button', onClickFunction = None, onPress = False):
@@ -41,6 +41,9 @@ class Button():
         self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.buttonSurf = font.render(buttonText, True, (20, 20, 20))
         #objects.append(self)
+
+    def getPos(self):
+        return (self.x, self.y)
 
     def process(self):
         mousePos = pygame.mouse.get_pos()
@@ -72,11 +75,13 @@ startButton = Button(30, 230, 140, 40, "start", singlePlay)
 menuButton = Button(30, 300, 140, 40, "menu", showMenu)
 quitButton = Button(30, 370, 140, 40, "quit", pygame.quit)
 
-objects.append(startButton)
-objects.append(menuButton)
-objects.append(quitButton)
+buttons.append(startButton)
+buttons.append(menuButton)
+buttons.append(quitButton)
 
 while True:
+
+    mousePos = pygame.mouse.get_pos()
 
     screen.fill(colorGreen)
     screen.blit(textGameName, [width // 2 - 100, 70])
@@ -85,8 +90,10 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            pygame.mouse.set_pos(startButton.getPos())
 
-    for obj in objects:
+    for obj in buttons:
         obj.process()
     
     pygame.display.flip()
