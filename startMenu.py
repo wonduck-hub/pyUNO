@@ -1,6 +1,8 @@
 import pygame
 import sys
 
+#from settingMenu import screenSizes
+
 pygame.init()
 
 size = [700, 450]
@@ -12,13 +14,11 @@ pygame.display.set_caption(title)
 width = screen.get_width()
 height = screen.get_height()
 
-#color
 colorWhite = (255, 255, 255)
 colorBlack = (0, 0, 0)
 colorGreen = (0, 80, 0)
 colorBlue = (0, 0, 100)
 
-#font
 largeFont = pygame.font.SysFont('Corbel', 100)
 font = pygame.font.SysFont('Arial', 40)
 smallFont = pygame.font.SysFont('Arial', 15)
@@ -86,14 +86,9 @@ buttons.append(startButton)
 buttons.append(menuButton)
 buttons.append(quitButton)
 
-#현제 버튼 인덱스를 구하기 위한 것
 temp = 0
 buttonIndex = 0
-
-#선택된 버튼 표시용
 selectPos = buttons[0].getPos()
-
-#설면문 출력 여부
 isShowHelp = False
 
 while True:
@@ -132,7 +127,7 @@ while True:
     
     screen.blit(textSelect, selectPos)
 
-    if isShowHelp: #키 설명 출력
+    if isShowHelp:
         screen.blit(textHelpEnter, (width // 2 - 50, height // 2))
         screen.blit(textHelpNextButton, (width // 2 - 50, height // 2 + 50))
         screen.blit(textHelpBeforButton, (width // 2 - 50, height // 2 + 100))
