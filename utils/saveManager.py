@@ -1,17 +1,23 @@
-import os
+import json
 
-class saveSettingManager:
-    #파일의 내용을 저장하고 가져오는 클래스
+class settingManager:
     def __init__(self):
-        self.__fileName = "saveFile/settingFile.txt"
-        self.__backgroundColor = None
-        self.__inputKey = None
-
+        self.__filePath = '/github/PYUNO/json/setting.json'
+        self.__data = {'backgroundColor' : [0, 80, 0], 
+                         'screenSize' : [700, 450]}
         
-    def write(self, text):
-        with open(self.__fileName, "w") as f:
-            f.write(text)
+    def status(self):
+        print(self.__data)
+        
+    def write(self, data):# 나중에 data를 받아오게끔 수정
+        self.__data = data
+        with open(self.__filePath, "w") as f:
+            json.dump(self.__data, f, indent = 4)
             
     def read(self):
-        with open(self.__fileName, "r") as f:
-            return f.read()
+        with open(self.__filePath, "r") as f:
+            return json.load(f)
+
+if __name__ == "__main__":
+    test = settingManager()
+    test.write()

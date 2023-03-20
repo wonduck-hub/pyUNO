@@ -1,10 +1,12 @@
 import pygame
 from utils.button import Button
 from settingMenu import menu
-from settings import *
 import sys
 
 pygame.init()
+
+size = [700, 450]
+title = "pyUNO"
 
 screen = pygame.display.set_mode(size)
 
@@ -13,9 +15,13 @@ pygame.display.set_caption(title)
 width = screen.get_width()
 height = screen.get_height()
 
+colorWhite = (255, 255, 255)
+colorBlack = (0, 0, 0)
+backgroundColor = (0, 80, 0)
+colorBlue = (0, 0, 100)
 
 largeFont = pygame.font.SysFont('Corbel', 100)
-font = pygame.font.SysFont('Arial', 40)
+font = pygame.font.SysFont('Arial', 35)
 smallFont = pygame.font.SysFont('Arial', 15)
 
 #rendering a text written in this font

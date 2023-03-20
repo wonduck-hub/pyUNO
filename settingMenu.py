@@ -1,20 +1,67 @@
 import pygame
-from settings import *
+from utils.saveManager import settingManager
 from utils.button import Button
 import os
 
+setting = settingManager()
+data = setting.read()
+
+def smallSize():
+   data['screenSize'] = [650, 400]
+
+def middleSize():
+   data['screenSize'] = [700, 450]
+
+def largeSize():
+   data['screenSize'] = [750, 500]
+
+def saveData():
+   setting.write(data)
+   return
+
 def menu():
-   screenSizes = [[600 , 400], [700, 450], [800, 500]]
-   screen = pygame.display.set_mode(size)
+   screen = pygame.display.set_mode([700, 450])
+   
+   font = pygame.font.SysFont('Arial', 35)
+
+   textScreenSize = font.render("screen size:", True, [255, 255, 255])
+   textColorBlindness = font.render("color blindness:", True, [255, 255, 255])
 
    buttons = []
 
-   screenSizeSmall = Button(30, 230, 140, 40, "small screen", screen)
+   screenSizeSmallButton = Button(30, 50, 140, 40, "650X400", screen, smallSize)
+   screenSizeMiddleButton = Button(180, 50, 140, 40, "700X450", screen, middleSize)
+   screenSizeLargeButton = Button(330, 50, 140, 40, "750X500", screen, largeSize)
+
+   screenColorBlindnessOn = Button(30, 145, 140, 40, "on", screen)
+   screenColorBlindnessOff = Button(180, 145, 140, 40, "off", screen)
+
+   saveButton = Button(500, 400, 140, 40, "save", screen, saveData)
+   exitButton = Button(350, 400, 140, 40, "exit", screen)
+
+   buttons.append(screenSizeSmallButton)
+   buttons.append(screenSizeMiddleButton)
+   buttons.append(screenSizeLargeButton)
+   buttons.append(screenColorBlindnessOff)
+   buttons.append(screenColorBlindnessOn)
+   buttons.append(saveButton)
+   buttons.append(exitButton)
 
    while True:
-      screen.fill(backgroundColor)
+      screen.fill([0, 80, 0])
       mousePos = pygame.mouse.get_pos()
 
+      for event in pygame.event.get():
+         if event.type == pygame.QUIT:
+            pygame.quit()
 
+         
+      screen.blit(textScreenSize, [30, 5])
+      screen.blit(textColorBlindness, [30, 100])
+      
+
+
+      for btn in buttons:
+         btn.process()
 
       pygame.display.flip()
