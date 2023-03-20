@@ -1,13 +1,20 @@
 import pygame
-#from . import backgroundColor
+from settings import *
+from utils.button import Button
 import os
 
 def menu():
-   # screenSizes = {"small" : [600 , 400], "middle" : [700, 450], "large" : [800, 500]}
-
-   size = [700, 450]
+   screenSizes = [[600 , 400], [700, 450], [800, 500]]
    screen = pygame.display.set_mode(size)
 
+   buttons = []
+
+   screenSizeSmall = Button(30, 230, 140, 40, "small screen", screen)
+
    while True:
-      #screen.fill(backgroundColor)
-      pass
+      screen.fill(backgroundColor)
+      mousePos = pygame.mouse.get_pos()
+
+
+
+      pygame.display.flip()

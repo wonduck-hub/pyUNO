@@ -1,25 +1,18 @@
 import pygame
 from utils.button import Button
-#from .settingMenu import menu
+from settingMenu import menu
+from settings import *
 import sys
-
-#from settingMenu import screenSizes
 
 pygame.init()
 
-size = [700, 450]
 screen = pygame.display.set_mode(size)
 
-title = "pyUNO"
 pygame.display.set_caption(title)
 
 width = screen.get_width()
 height = screen.get_height()
 
-colorWhite = (255, 255, 255)
-colorBlack = (0, 0, 0)
-backgroundColor = (0, 80, 0)
-colorBlue = (0, 0, 100)
 
 largeFont = pygame.font.SysFont('Corbel', 100)
 font = pygame.font.SysFont('Arial', 40)
@@ -34,8 +27,6 @@ textHelpBeforButton = font.render("Befor : Up or left arrow", True, colorWhite)
 
 buttons = []
 
-def menu():
-    pass
 def singlePlay():
     pass
 
@@ -77,7 +68,7 @@ while True:
                 selectPos = buttons[buttonIndex].getPos()
 
             elif event.key == pygame.K_RETURN:
-                buttons[buttonIndex].onClickFunction()
+                buttons[buttonIndex].runFunction()
 
             else:
                 startTime = pygame.time.get_ticks()
