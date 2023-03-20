@@ -1,8 +1,7 @@
 import pygame
 from utils.saveManager import settingManager
 from utils.button import Button
-import os
-
+#TODO setting menu 화면 크기 적용
 setting = settingManager()
 data = setting.read()
 
@@ -17,7 +16,6 @@ def largeSize():
 
 def saveData():
    setting.write(data)
-   return
 
 def menu():
    screen = pygame.display.set_mode([700, 450])
@@ -54,13 +52,14 @@ def menu():
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
             pygame.quit()
-
+         elif event.type == pygame.MOUSEBUTTONDOWN and(mousePos[0] >350 and mousePos[0] < 490) and (mousePos[1] > 400 and mousePos[1] < 440):
+            data = setting.read()
+            screen = pygame.display.set_mode(data['screenSize'])
+            return
          
       screen.blit(textScreenSize, [30, 5])
       screen.blit(textColorBlindness, [30, 100])
       
-
-
       for btn in buttons:
          btn.process()
 

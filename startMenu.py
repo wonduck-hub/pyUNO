@@ -1,14 +1,17 @@
 import pygame
+from utils.saveManager import settingManager
 from utils.button import Button
 from settingMenu import menu
 import sys
 
+setting = settingManager()
+data = setting.read()
+
 pygame.init()
 
-size = [700, 450]
 title = "pyUNO"
 
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(data['screenSize'])
 
 pygame.display.set_caption(title)
 
@@ -36,9 +39,9 @@ buttons = []
 def singlePlay():
     pass
 
-startButton = Button(30, 230, 140, 40, "start", screen, singlePlay)
-menuButton = Button(30, 300, 140, 40, "menu", screen, menu)
-quitButton = Button(30, 370, 140, 40, "quit", screen, pygame.quit)
+startButton = Button(30, 210, 140, 40, "start",screen, singlePlay)
+menuButton = Button(30, 280, 140, 40, "menu", screen, menu)
+quitButton = Button(30, 350, 140, 40, "quit", screen, pygame.quit)
 
 buttons.append(startButton)
 buttons.append(menuButton)
@@ -50,10 +53,9 @@ selectPos = buttons[0].getPos()
 isShowHelp = False
 
 while True:
-
     mousePos = pygame.mouse.get_pos()
 
-    screen.fill(backgroundColor)
+    screen.fill(data['backgroundColor'])
     screen.blit(textGameName, [width // 2 - 100, 70])
 
     for event in pygame.event.get():

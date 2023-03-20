@@ -17,7 +17,6 @@ class Button():
         self.__buttonRect = pygame.Rect(self.__x, self.__y, self.__width, self.__height)
         self.__font = pygame.font.SysFont('Arial', 35)
         self.__buttonSurf = self.__font.render(buttonText, True, (20, 20, 20))
-        self.__selected = False
         self.__screen = screen
 
     def runFunction(self):
