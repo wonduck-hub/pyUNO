@@ -1,51 +1,26 @@
 import pygame
 
-class Screen():
- 
-    # INITIALIZATION OF WINDOW HAVING TITLE,
-    # WIDTH, HEIGHT AND COLOUR
-    # HERE (0,0,255) IS A COLOUR CODE
-    def __init__(self, title, width=700, height=450,
-                 fill=(0, 0, 255)):
-        # HEIGHT OF A WINDOW
-        self.height = height
-        # TITLE OF A WINDOW
-        self.title = title
-        # WIDTH OF A WINDOW
+class PygameScreen:
+    def __init__(self, width, height, title):
         self.width = width
-        # COLOUR CODE
-        self.fill = fill
-        # CURRENT STATE OF A SCREEN
-        self.CurrentState = False
- 
-    # DISPLAY THE CURRENT SCREEN OF
-    # A WINDOW AT THE CURRENT STATE
-    def makeCurrentScreen(self):
-       
-        # SET THE TITLE FOR THE CURRENT STATE OF A SCREEN
+        self.height = height
+        self.title = title
+        self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption(self.title)
-        # SET THE STATE TO ACTIVE
-        self.CurrentState = True
-        # ACTIVE SCREEN SIZE
-        self.screen = pygame.display.set_mode((self.width,
-                                           self.height))
- 
-    # THIS WILL SET THE STATE OF A CURRENT STATE TO OFF
-    def endCurrentScreen(self):
-        self.CurrentState = False
- 
-    # THIS WILL CONFIRM WHETHER THE NAVIGATION OCCURS
-    def checkUpdate(self, fill):
-        # HERE FILL IS THE COLOR CODE
-        self.fill = fill
-        return self.CurrentState
- 
-    # THIS WILL UPDATE THE SCREEN WITH
-    # THE NEW NAVIGATION TAB
-    def screenUpdate(self):
-        if self.CurrentState:
-            self.screen.fill(self.fill)
- 
-    # RETURNS THE TITLE OF THE SCREEN
-    def returnTitle(self):
-        return self.screen
+    
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            
+            # 화면을 검정색으로 채우기
+            self.screen.fill((0, 0, 0))
+            
+            # 여기에 화면에 그리는 코드를 작성합니다.
+            # 예를 들어, pygame.draw.circle(self.screen, (255, 255, 255), (self.width/2, self.height/2), 50)과 같은 코드를 사용하여 원을 그릴 수 있습니다.
+            
+            pygame.display.update()
+        
+        pygame.quit()
