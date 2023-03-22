@@ -136,19 +136,18 @@ class SettingScreen(Screen):
         self.buttons.append(self.exitButton)
 
     def run(self):
-        pygame.init()
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
-        self.screen.fill(self.backgourndColor)
+            self.screen.fill(self.backgourndColor)
 
 
-        pygame.display.update()
+            pygame.display.update()
         
-    pygame.quit()
+        pygame.quit()
 
 
 if __name__ == '__main__':
