@@ -130,6 +130,8 @@ class SettingScreen(Screen):
         self.saveButton = Button(self.width - 150, self.height - 100, 140, 40, "save", self.screen, self.saveData)
         self.exitButton = Button(self.width - 150, self.height - 50, 140, 40, "exit", self.screen, self.quitScreen)
 
+        self.resetButton = Button(self.width - 150, 50, 140, 40, "reset", self.screen, self.resetData)
+        
         self.buttons.append(self.screenSizeSmallButton)
         self.buttons.append(self.screenSizeMiddleButton)
         self.buttons.append(self.screenSizeLargeButton)
@@ -137,6 +139,7 @@ class SettingScreen(Screen):
         self.buttons.append(self.screenColorBlindnessOn)
         self.buttons.append(self.saveButton)
         self.buttons.append(self.exitButton)
+        self.buttons.append(self.resetButton)
 
     def smallScreen(self):
         self.data['screenSize'] = [650, 400]
@@ -152,6 +155,11 @@ class SettingScreen(Screen):
 
     def quitScreen(self):
         self.running = False
+
+    def resetData(self):
+        #나중에 추가 필요
+        self.data['screenSize'] = [700, 450]
+        self.setting.write(self.data)
 
     def run(self):
         self.running = True
