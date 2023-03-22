@@ -99,7 +99,7 @@ class StartScreen(Screen):
                 if pygame.time.get_ticks() - startTime > 1000:
                     isShowHelp = False
                         
-            pygame.display.update()
+            pygame.display.flip()
         
         pygame.quit()
 
@@ -140,17 +140,26 @@ class SettingScreen(Screen):
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    pygame.quit()
                     running = False
 
             self.screen.fill(self.backgourndColor)
 
+            self.screen.blit(self.textScreenSize, [30, 5])
+            self.screen.blit(self.textColorBlindness, [30, 100])
 
-            pygame.display.update()
+            for btn in self.buttons:
+                btn.process()
+
+            self.saveButton.process()
+            self.exitButton.process()
+
+            pygame.display.flip()
         
         pygame.quit()
 
 
 if __name__ == '__main__':
     pygame.init()
-    setting = StartScreen()
+    setting = SettingScreen()
     setting.run()
