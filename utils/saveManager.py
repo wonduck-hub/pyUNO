@@ -2,7 +2,7 @@ import json
 
 class settingManager:
     def __init__(self):
-        self.__filePath = 'C:/Users/dnjse/OneDrive/바탕 화면/git/pyUNO/json/setting.json'
+        self.__filePath = './json/setting.json'
         self.__data = {'backgroundColor' : [0, 80, 0], 
                          'screenSize' : [700, 450]}
         

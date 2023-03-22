@@ -7,12 +7,11 @@ class Screen:
         self.setting = settingManager()
         self.data = self.setting.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
-        self.backgourndColor = self.data['backgroundColor']
+        self.running = True
 
 class StartScreen(Screen):
     def __init__(self):
         super().__init__()
-        self.setting = settingManager()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
 
@@ -32,6 +31,7 @@ class StartScreen(Screen):
         self.textHelpNextButton = self.font.render("Next : Down or right arrow", True, self.colorWhite)
         self.textHelpBeforButton = self.font.render("Befor : Up or left arrow", True, self.colorWhite)
 
+        #self.settingMenu = SettingScreen()
 
         self.buttons = []
         self.startButton = Button(30, 210, 140, 40, "start",self.screen)
@@ -42,23 +42,26 @@ class StartScreen(Screen):
         self.buttons.append(self.menuButton)
         self.buttons.append(self.quitButton)
 
-
+    def showSetting(self):
+        settingMenu = SettingScreen()
+        settingMenu.run()
+        self.data = self.setting.read()
+        self.screen = pygame.display.set_mode(self.data['screenSize'])
     
     def run(self):
 
-        settingMenu = SettingScreen()
-        self.menuButton.setOnClickFunction(settingMenu.run)
+        self.menuButton.setOnClickFunction(self.showSetting)
 
         temp = 0
         buttonIndex = 0
         selectPos = self.buttons[0].getPos()
         isShowHelp = False
 
-        running = True
-        while running:
+        self.running = True
+        while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_DOWN or event.key == pygame.K_RIGHT: #화살표 아래, 오른쪽 버튼을 눌렀을 때
                         temp = temp + 1
@@ -78,7 +81,7 @@ class StartScreen(Screen):
                         startTime = pygame.time.get_ticks()
                         isShowHelp = True
             
-            self.screen.fill(self.backgourndColor)
+            self.screen.fill(self.data['backgroundColor'])
             
             # 여기에 화면에 그리는 코드를 작성합니다.
             for btn in self.buttons:
@@ -117,15 +120,15 @@ class SettingScreen(Screen):
 
         self.buttons = []
 
-        self.screenSizeSmallButton = Button(30, 50, 140, 40, "650X400", self.screen)
-        self.screenSizeMiddleButton = Button(180, 50, 140, 40, "700X450", self.screen)
-        self.screenSizeLargeButton = Button(330, 50, 140, 40, "750X500", self.screen)
+        self.screenSizeSmallButton = Button(30, 50, 140, 40, "650X400", self.screen, self.smallScreen)
+        self.screenSizeMiddleButton = Button(180, 50, 140, 40, "700X450", self.screen, self.middleScreen)
+        self.screenSizeLargeButton = Button(330, 50, 140, 40, "750X500", self.screen, self.largeScreen)
 
         self.screenColorBlindnessOn = Button(30, 145, 140, 40, "on", self.screen)
         self.screenColorBlindnessOff = Button(180, 145, 140, 40, "off", self.screen)
 
-        self.saveButton = Button(500, 400, 140, 40, "save", self.screen)
-        self.exitButton = Button(350, 400, 140, 40, "exit", self.screen)
+        self.saveButton = Button(self.width - 150, self.height - 100, 140, 40, "save", self.screen, self.saveData)
+        self.exitButton = Button(self.width - 150, self.height - 50, 140, 40, "exit", self.screen, self.quitScreen)
 
         self.buttons.append(self.screenSizeSmallButton)
         self.buttons.append(self.screenSizeMiddleButton)
@@ -135,15 +138,30 @@ class SettingScreen(Screen):
         self.buttons.append(self.saveButton)
         self.buttons.append(self.exitButton)
 
+    def smallScreen(self):
+        self.data['screenSize'] = [650, 400]
+
+    def middleScreen(self):
+        self.data['screenSize'] = [700, 450]
+
+    def largeScreen(self):
+        self.data['screenSize'] = [750, 500]
+
+    def saveData(self):
+        self.setting.write(self.data)
+
+    def quitScreen(self):
+        self.running = False
+
     def run(self):
-        running = True
-        while running:
+        self.running = True
+        while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    running = False
+                    self.running = False
 
-            self.screen.fill(self.backgourndColor)
+            self.screen.fill(self.data['backgroundColor'])
 
             self.screen.blit(self.textScreenSize, [30, 5])
             self.screen.blit(self.textColorBlindness, [30, 100])
@@ -151,15 +169,12 @@ class SettingScreen(Screen):
             for btn in self.buttons:
                 btn.process()
 
-            self.saveButton.process()
-            self.exitButton.process()
-
             pygame.display.flip()
         
-        pygame.quit()
+        #pygame.quit()
 
 
 if __name__ == '__main__':
     pygame.init()
-    setting = SettingScreen()
+    setting = StartScreen()
     setting.run()
