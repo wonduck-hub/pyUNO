@@ -26,6 +26,9 @@ class Button():
     def getPos(self):
         return (self.__x, self.__y)
 
+    def setOnClickFunction(self, onClickFunction):
+        self.__onClickFunction = onClickFunction
+
     def process(self):
         mousePos = pygame.mouse.get_pos()
         self.__buttonSurface.fill(self.__fillColors['nomal'])
