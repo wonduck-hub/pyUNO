@@ -9,8 +9,8 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 
 colors = ["red", "yellow", "green", "blue"]
-color_values = [str(i) for i in range(10)] + ["skip", "reverse", "draw2"]
-noncolor_values = ["change_color", "defense", "joker"]
+color_values = [str(i) for i in range(10)] + ["skip", "reverse", "draw2", "oneMore"]
+noncolor_values = ["changeColor", "defense", "joker"]
 
 
 class Card:
