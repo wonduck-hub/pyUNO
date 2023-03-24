@@ -185,16 +185,35 @@ class inGameScreen(Screen):
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
 
+        self.escButtons = []
+
+        self.quitButton= Button(20, (self.height // 4), 160, 40, 'quit game', self.screen, self.quitScreen)
+        self.settingButton = Button(20, (self.height // 4) * 2, 100, 40, 'setting', self.screen, self.showSetting)
+
+        self.escButtons.append(self.quitButton)
+        self.escButtons.append(self.settingButton)
+        
+
         self.buttons = []
 
-        self.turnEndButton = Button(10, self.height - 50, 100, 35, 'UNO', self.screen)
+        self.unoButton = Button(10, self.height - 50, 100, 35, 'UNO', self.screen)
 
-        self.buttons.append(self.turnEndButton)
+        self.buttons.append(self.unoButton)
+
+    def quitScreen(self):
+        self.running = False
+
+    def showSetting(self):
+        settingMenu = SettingScreen()
+        settingMenu.run()
+        self.data = self.setting.read()
+        self.screen = pygame.display.set_mode(self.data['screenSize'])
 
     def run(self):
 
         handsOnColor = [0, 120, 0]
         listColor = [30, 30, 30]
+        isInputEsc = False
 
         self.running = True
         while self.running:
@@ -202,15 +221,32 @@ class inGameScreen(Screen):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        if isInputEsc:
+                            isInputEsc = False
+                        else:
+                            isInputEsc = True
+                
             
-            self.screen.fill(self.data['backgroundColor'])
+            if isInputEsc:
+                self.screen.fill([255, 255, 255])
 
-            # 영역 별 컬러
-            pygame.draw.rect(self.screen, handsOnColor, [0, (self.height // 3) * 2, self.width, self.height])
-            pygame.draw.rect(self.screen, listColor, [(self.width // 4) * 3, 0, self.width, self.height])
+                for btn in self.escButtons:
+                    btn.process()
 
-            for btn in self.buttons:
-                btn.process()
+                #이 상태에선 타이머는 멈춰 있어야 함
+
+            else:
+                self.screen.fill(self.data['backgroundColor'])
+
+                # 영역 별 컬러
+                pygame.draw.rect(self.screen, handsOnColor, [0, (self.height // 3) * 2, self.width, self.height])
+                pygame.draw.rect(self.screen, listColor, [(self.width // 4) * 3, 0, self.width, self.height])
+
+                # 버튼 출력
+                for btn in self.buttons:
+                    btn.process()
 
             pygame.display.flip()
 
