@@ -7,6 +7,7 @@ class Screen:
         self.setting = settingManager()
         self.data = self.setting.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
+        pygame.display.set_caption('PyUNO')
         self.running = True
 
 class StartScreen(Screen):
@@ -48,9 +49,14 @@ class StartScreen(Screen):
         self.data = self.setting.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
     
+    def showInGame(self):
+        inGame = inGameScreen()
+        inGame.run()
+    
     def run(self):
 
         self.menuButton.setOnClickFunction(self.showSetting)
+        self.startButton.setOnClickFunction(self.showInGame)
 
         temp = 0
         buttonIndex = 0
@@ -171,10 +177,45 @@ class SettingScreen(Screen):
 
             pygame.display.flip()
         
-        #pygame.quit()
+class inGameScreen(Screen):
+    
+    def __init__(self):
+        super().__init__()
+        self.setting = settingManager()
+        self.width = self.screen.get_width()
+        self.height = self.screen.get_height()
+
+        self.buttons = []
+
+        self.turnEndButton = Button(10, self.height - 50, 100, 35, 'UNO', self.screen)
+
+        self.buttons.append(self.turnEndButton)
+
+    def run(self):
+
+        handsOnColor = [0, 120, 0]
+        listColor = [30, 30, 30]
+
+        self.running = True
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    self.running = False
+            
+            self.screen.fill(self.data['backgroundColor'])
+
+            # 영역 별 컬러
+            pygame.draw.rect(self.screen, handsOnColor, [0, (self.height // 3) * 2, self.width, self.height])
+            pygame.draw.rect(self.screen, listColor, [(self.width // 4) * 3, 0, self.width, self.height])
+
+            for btn in self.buttons:
+                btn.process()
+
+            pygame.display.flip()
 
 
 if __name__ == '__main__':
     pygame.init()
-    setting = StartScreen()
+    setting = inGameScreen()
     setting.run()
