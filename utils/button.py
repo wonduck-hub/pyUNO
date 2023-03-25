@@ -10,7 +10,7 @@ class Button():
         self.__onClickFunction = onClickFunction
         self.__onePress = onPress
         self.__alreadyPressed = False
-        self.__fillColors = {'nomal' : "#ffffff", 
+        self.__fillColors = {'nomal' : "#cccccc", 
                            "hover" : "#666666", 
                            "pressed" : "#333333"}
         self.__buttonSurface = pygame.Surface((self.__width, self.__height))
@@ -25,6 +25,9 @@ class Button():
 
     def getPos(self):
         return (self.__x, self.__y)
+
+    def setOnClickFunction(self, onClickFunction):
+        self.__onClickFunction = onClickFunction
 
     def process(self):
         mousePos = pygame.mouse.get_pos()

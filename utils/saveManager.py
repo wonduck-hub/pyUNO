@@ -2,7 +2,7 @@ import json
 
 class settingManager:
     def __init__(self):
-        self.__filePath = '/github/PYUNO/json/setting.json'
+        self.__filePath = './json/setting.json'
         self.__data = {'backgroundColor' : [0, 80, 0], 
                          'screenSize' : [700, 450]}
         
@@ -19,5 +19,6 @@ class settingManager:
             return json.load(f)
 
 if __name__ == "__main__":
+    # 여기서 테스트
     test = settingManager()
     test.write()
