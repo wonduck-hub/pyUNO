@@ -87,43 +87,44 @@ class Deck:
     def addCard(self, card): # 인자로 받은 card를 cards 리스트에 추가
         self.cards.append(card)
 
+if __name__ == '__main__':
+    pygame.init()
 
-pygame.init()
-
-screen = pygame.display.set_mode((1000, 1000))
-pygame.display.set_caption("카드 게임")
-
-
-pygame.display.update()
-
-    
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    screen = pygame.display.set_mode((1000, 1000))
+    pygame.display.set_caption("카드 게임")
 
 
-    bg_color = pygame.Color("green")
-    screen.fill(bg_color)
-    pos = pygame.mouse.get_pos()
-    
-    # 예시코드
-    # 숫자 카드 객체 생성
-    #number_card = NumberCard("blue", 1)
-    # 특수 능력 카드 객체 생성
-    #ability_card = AbilityCard("None", "joker")
-    #ability_card1 = AbilityCard("green", "skip")
-    # 카드 그리기
-    #number_card.draw(50, 50)
-    #ability_card.draw(100, 100)
-    #ability_card1.flip()
-    #ability_card1.draw(200, 200)
-    
-    # 화면 업데이트
     pygame.display.update()
 
-# Pygame 종료
-pygame.quit()
+
+    
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+
+        bg_color = pygame.Color("green")
+        screen.fill(bg_color)
+        pos = pygame.mouse.get_pos()
+        
+        # 예시코드
+        # 숫자 카드 객체 생성
+        #number_card = NumberCard("blue", 1)
+        # 특수 능력 카드 객체 생성
+        #ability_card = AbilityCard("None", "joker")
+        #ability_card1 = AbilityCard("green", "skip")
+        # 카드 그리기
+        #number_card.draw(50, 50)
+        #ability_card.draw(100, 100)
+        #ability_card1.flip()
+        #ability_card1.draw(200, 200)
+        
+        # 화면 업데이트
+        pygame.display.update()
+
+    # Pygame 종료
+    pygame.quit()
 
 
