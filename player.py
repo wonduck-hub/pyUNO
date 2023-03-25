@@ -85,37 +85,37 @@ class ComputerPlayer(Player):
         self.time=2000
 
 
+if __name__ == '__main__':
+    pygame.init()
 
-pygame.init()
+    screen = pygame.display.set_mode((1000, 1000))
+    pygame.display.set_caption("카드 게임")
 
-screen = pygame.display.set_mode((1000, 1000))
-pygame.display.set_caption("카드 게임")
-
-bg_color = pygame.Color("green")
-screen.fill(bg_color)
-
-
-# 카드덱 생성
-deck = card.Deck()
-
-human_plyr = HumanPlayer(deck) #사용자 객체 
-pc_plyr = ComputerPlayer(deck) # 컴퓨터 객체
-
-discardPile = DiscardPile(deck) # 버린 카드 객체
-discardPileCard = discardPile.cards # 버린 카드 리스트
+    bg_color = pygame.Color("green")
+    screen.fill(bg_color)
 
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-          
-        
+    # 카드덱 생성
+    deck = card.Deck()
+
+    human_plyr = HumanPlayer(deck) #사용자 객체 
+    pc_plyr = ComputerPlayer(deck) # 컴퓨터 객체
+
+    discardPile = DiscardPile(deck) # 버린 카드 객체
+    discardPileCard = discardPile.cards # 버린 카드 리스트
 
 
-# Pygame 종료
-pygame.quit()
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            
+            
+
+
+    # Pygame 종료
+    pygame.quit()
 
 
 
