@@ -14,12 +14,15 @@ noncolor_values = ["changeColor", "defense", "joker"]
 
 
 class Card:
-    def __init__(self, color, value):
+    def __init__(self, color, value, screen):
+        self.x = 0
+        self.y = 0
+        self.screen = screen
         self.color = color
         self.value = value
-        self.width = 100
-        self.height = 150  
-        self.face_up = False # 카드 뒤집어져 있는지 여부, 기본값 = back
+        self.width = 50
+        self.height = 80  
+        self.face_up = True # 카드 뒤집어져 있는지 여부, 기본값 = back
         
         image_path = f"card_image/{color}_{value}.png"
         self.image = pygame.transform.scale(pygame.image.load(image_path), (self.width, self.height))
@@ -27,11 +30,13 @@ class Card:
         self.rect = self.image.get_rect() # 카드의 사각형 영역
         
     def draw(self, x, y): # 위치 정보 인자로 받아 카드 그리기
-      if self.face_up:
-        screen.blit(self.image, (x, y))
-      else:
-        self.image = pygame.transform.scale(pygame.image.load("card_image/back.png"), (self.width, self.height))
-        screen.blit(self.image, (x, y))
+        self.x = x
+        self.y = y
+        if self.face_up:
+            self.screen.blit(self.image, (self.x, self.y))
+        else:
+            self.image = pygame.transform.scale(pygame.image.load("card_image/back.png"), (self.width, self.height))
+            self.screen.blit(self.image, (self.x, self.y))
         
     # def isClicked(self, pos):
     #   return self.rect.collidepoint(pos)
@@ -41,13 +46,13 @@ class Card:
       
       
 class NumberCard(Card):
-    def __init__(self, color, value):
-        super().__init__(color, value)
+    def __init__(self, color, value, screen):
+        super().__init__(color, value, screen)
         
         
 class AbilityCard(Card):
-    def __init__(self, color, ability):
-        super().__init__(color, ability)
+    def __init__(self, color, ability, screen):
+        super().__init__(color, ability, screen)
         self.ability = ability
       
 class Deck:

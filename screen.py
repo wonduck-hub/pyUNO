@@ -1,6 +1,7 @@
 import pygame
 from utils.saveManager import settingManager
 from utils.button import Button
+from card import NumberCard
 
 class Screen:
     def __init__(self):
@@ -223,6 +224,8 @@ class inGameScreen(Screen):
         listColor = [30, 30, 30]
         isInputEsc = False
 
+        testCard = NumberCard('red', '1', self.screen)
+
         self.running = True
         while self.running:
             for event in pygame.event.get():
@@ -251,6 +254,8 @@ class inGameScreen(Screen):
                 # 영역 별 컬러
                 pygame.draw.rect(self.screen, handsOnColor, [0, (self.height // 3) * 2, self.width, self.height])
                 pygame.draw.rect(self.screen, listColor, [(self.width // 4) * 3, 0, self.width, self.height])
+
+                testCard.draw(self.width // 2, self.height // 2)
 
                 # 버튼 출력
                 for btn in self.buttons:

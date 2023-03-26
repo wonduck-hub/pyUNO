@@ -44,30 +44,30 @@ class Player:
     
     
     #플레이어 패에서 카드 뽑아내기
-    def playCard(self,playableCard,discardPile):
-        running = True
-        while running:
-            self.showPlayerHand()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                    break
-                if pygame.key.get_pressed()[pygame.K_q]:
-                    running = False
-                    break
-            
-                if event.type == MOUSEBUTTONDOWN:
-                    for card in self.handsOnCard:
-                    #print(card.rect)
-                        if card.rect.collidepoint(pygame.mouse.get_pos()):
-                                if card in playableCard:
-                                    chosenCard=card
-                                    self.handsOnCard.remove(chosenCard)
-                                    discardPile.addCard(chosenCard)
-                                    self.showPlayerHand()
-                                    discardPile.show()
-                                 
-                                    pygame.display.update()
+    #def playCard(self,playableCard,discardPile):
+    #    running = True
+    #    while running:
+    #        self.showPlayerHand()
+    #        for event in pygame.event.get():
+    #            if event.type == pygame.QUIT:
+    #                running = False
+    #                break
+    #            if pygame.key.get_pressed()[pygame.K_q]:
+    #                running = False
+    #                break
+    #        
+    #            if event.type == MOUSEBUTTONDOWN:
+    #                for card in self.handsOnCard:
+    #                #print(card.rect)
+    #                    if card.rect.collidepoint(pygame.mouse.get_pos()):
+    #                            if card in playableCard:
+    #                                chosenCard=card
+    #                                self.handsOnCard.remove(chosenCard)
+    #                                discardPile.addCard(chosenCard)
+    #                                self.showPlayerHand()
+    #                                discardPile.show()
+    #                             
+    #                                pygame.display.update()
 
                 
 
