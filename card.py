@@ -20,8 +20,8 @@ class Card:
         self.screen = screen
         self.color = color
         self.value = value
-        self.width = 50
-        self.height = 80  
+        self.width = 30
+        self.height = 50  
         self.face_up = True # 카드 뒤집어져 있는지 여부, 기본값 = back
         
         image_path = f"card_image/{color}_{value}.png"
