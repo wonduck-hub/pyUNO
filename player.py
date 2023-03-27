@@ -20,14 +20,15 @@ class DiscardPile:
 
 # 플레이어 클래스
 class Player:
-    def __init__(self,deck):
+    def __init__(self, name):
         # 플레이어 패 생성
-        self.handsOnCard=deck.prepareCard()
+        self.name = name
+        self.handsOnCard = []
 
-    # 카드덱에서 카드 뽑고 플레이어 패에 추가
-    def drawCard(self,deck):
-        drawCard=deck.drawCard()
-        self.handsOnCard.append(drawCard)
+    def showHandsOnCard(self):
+        for card in self.handsOnCard:
+            card.show(self.width // 2, self.height // 2)
+
     
     #마지막 카드에 기반해 플레이어 패에서 낼 수 있는 카드 리스트 생성
     def playableCard(self, discardPileCard):
@@ -43,45 +44,19 @@ class Player:
         return playableCard
     
     
-    #플레이어 패에서 카드 뽑아내기
-    #def playCard(self,playableCard,discardPile):
-    #    running = True
-    #    while running:
-    #        self.showPlayerHand()
-    #        for event in pygame.event.get():
-    #            if event.type == pygame.QUIT:
-    #                running = False
-    #                break
-    #            if pygame.key.get_pressed()[pygame.K_q]:
-    #                running = False
-    #                break
-    #        
-    #            if event.type == MOUSEBUTTONDOWN:
-    #                for card in self.handsOnCard:
-    #                #print(card.rect)
-    #                    if card.rect.collidepoint(pygame.mouse.get_pos()):
-    #                            if card in playableCard:
-    #                                chosenCard=card
-    #                                self.handsOnCard.remove(chosenCard)
-    #                                discardPile.addCard(chosenCard)
-    #                                self.showPlayerHand()
-    #                                discardPile.show()
-    #                             
-    #                                pygame.display.update()
-
                 
 
 # 사용자 플레이어 클래스
 class HumanPlayer(Player):
-    def __init__(self, deck):
-        super().__init__(deck)
+    def __init__(self, name):
+        super().__init__(name)
         self.time=3000
         
        
 # 컴퓨터 플레이어 클래스 
 class ComputerPlayer(Player):
-    def __init__(self, deck):
-        super().__init__(deck)
+    def __init__(self, name):
+        super().__init__(name)
         self.time=2000
 
 

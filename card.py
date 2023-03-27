@@ -29,7 +29,7 @@ class Card:
         
         self.rect = self.image.get_rect() # 카드의 사각형 영역
         
-    def draw(self, x, y): # 위치 정보 인자로 받아 카드 그리기
+    def show(self, x, y): # 위치 정보 인자로 받아 카드 그리기
         self.x = x
         self.y = y
         if self.face_up:
@@ -121,10 +121,10 @@ if __name__ == '__main__':
         ability_card = AbilityCard("None", "joker")
         ability_card1 = AbilityCard("green", "skip")
         # 카드 그리기
-        number_card.draw(50, 50)
-        ability_card.draw(100, 100)
+        number_card.show(50, 50)
+        ability_card.show(100, 100)
         ability_card1.flip()
-        ability_card1.draw(200, 200)
+        ability_card1.show(200, 200)
         
         # 화면 업데이트
         pygame.display.update()

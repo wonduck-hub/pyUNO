@@ -2,6 +2,7 @@ import pygame
 from utils.saveManager import settingManager
 from utils.button import Button
 from card import NumberCard
+from player import HumanPlayer
 
 class Screen:
     def __init__(self):
@@ -36,7 +37,7 @@ class StartScreen(Screen):
         #self.settingMenu = SettingScreen()
 
         self.buttons = []
-        self.startButton = Button(30, 210, 140, 40, "start",self.screen)
+        self.startButton = Button(30, 210, 140, 40, "single",self.screen)
         self.menuButton = Button(30, 280, 140, 40, "menu", self.screen)
         self.quitButton = Button(30, 350, 140, 40, "quit", self.screen, pygame.quit)
 
@@ -51,7 +52,7 @@ class StartScreen(Screen):
         self.screen = pygame.display.set_mode(self.data['screenSize'])
     
     def showInGame(self):
-        inGame = inGameScreen()
+        inGame = LobbyScreen()
         inGame.run()
     
     def run(self):
@@ -186,10 +187,119 @@ class SettingScreen(Screen):
 
             pygame.display.flip()
         
-class inGameScreen(Screen):
-    
+class LobbyScreen(Screen):
     def __init__(self):
         super().__init__()
+        self.setting = settingManager()
+        self.width = self.screen.get_width()
+        self.height = self.screen.get_height()
+        self.nameText = ''
+        self.computerNum = 1
+        self.font = pygame.font.SysFont('Arial', 35)
+
+        self.textName = self.font.render('name', True, (255, 255, 255))
+        self.textNumberOfComputer = self.font.render('NumberOfComputer', True, (255, 255, 255))
+
+        self.inputBox = pygame.Rect(50, 60, 140, 32)
+
+        self.buttons = []
+
+        self.exitButton = Button(self.width - 150, self.height - 50, 140, 40, "exit", self.screen, self.quitScreen)
+        self.saveButton = Button(self.width - 150, self.height - 100, 140, 40, "start", self.screen, self.startGame)
+
+        self.oneButton = Button(50, self.height // 2 + 60, 40, 40, "1", self.screen, self.one)
+        self.twoButton = Button(100, self.height // 2 + 60, 40, 40, "2", self.screen, self.two)
+        self.threeButton = Button(150, self.height // 2 + 60, 40, 40, "3", self.screen, self.three)
+        self.fourButton = Button(200, self.height // 2 + 60, 40, 40, "4", self.screen, self.four)
+        self.fiveButton = Button(250, self.height // 2 + 60, 40, 40, "5", self.screen, self.five)
+
+        self.buttons.append(self.exitButton)
+        self.buttons.append(self.saveButton)
+        self.buttons.append(self.oneButton)
+        self.buttons.append(self.twoButton)
+        self.buttons.append(self.threeButton)
+        self.buttons.append(self.fourButton)
+        self.buttons.append(self.fiveButton)
+    
+    def one(self):
+        self.computerNum = 1
+
+    def two(self):
+        self.computerNum = 2
+
+    def three(self):
+        self.computerNum = 3
+
+    def four(self):
+        self.computerNum = 4
+
+    def five(self):
+        self.computerNum = 5
+
+    def startGame(self):
+        SingleGameScreen(self.nameText, self.computerNum).run()
+
+    def quitScreen(self):
+        self.running = False
+
+    def run(self):
+        font = pygame.font.Font(None, 32)
+        color_inactive = pygame.Color('lightskyblue3')
+        color_active = pygame.Color('dodgerblue2')
+        color = color_inactive
+        active = False
+        done = False
+    
+        self.running = True
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    self.running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    # If the user clicked on the input_box rect.
+                    if self.inputBox.collidepoint(event.pos):
+                        # Toggle the active variable.
+                        active = not active
+                    else:
+                        active = False
+                    # Change the current color of the input box.
+                    color = color_active if active else color_inactive
+                if event.type == pygame.KEYDOWN:
+                    if active:
+                        if event.key == pygame.K_RETURN:
+                            print(self.nameText)
+                            self.nameText = ''
+                        elif event.key == pygame.K_BACKSPACE:
+                            self.nameText = self.nameText[:-1]
+                        else:
+                            self.nameText += event.unicode
+
+            # TODO 텍스트 박스에 텍스티 입력 추가
+            self.screen.fill(self.data['backgroundColor'])
+
+            self.screen.blit(self.textName, [50, 5])
+            self.screen.blit(self.textNumberOfComputer, [50, self.height // 2])
+
+            txt_surface = font.render(self.nameText, True, color)
+            width = max(200, txt_surface.get_width()+10)
+            self.inputBox.w = width
+            # Blit the text.
+            self.screen.blit(txt_surface, (self.inputBox.x+5, self.inputBox.y+5))
+            # Blit the input_box rect.
+            pygame.draw.rect(self.screen, color, self.inputBox, 2)
+
+            for btn in self.buttons:
+                btn.process()
+
+            pygame.display.flip()
+
+class SingleGameScreen(Screen):
+    
+    def __init__(self, name, computerNum):
+        super().__init__()
+        self.playerName = name
+        self.computerNum = computerNum
         self.setting = settingManager()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
@@ -224,6 +334,8 @@ class inGameScreen(Screen):
         listColor = [30, 30, 30]
         isInputEsc = False
 
+        me = HumanPlayer(self.playerName)
+
         testCard = NumberCard('red', '1', self.screen)
 
         self.running = True
@@ -246,7 +358,7 @@ class inGameScreen(Screen):
                 for btn in self.escButtons:
                     btn.process()
 
-                #이 상태에선 타이머는 멈춰 있어야 함
+                #TODO 이 상태에선 타이머는 멈춰 있어야 함
 
             else:
                 self.screen.fill(self.data['backgroundColor'])
@@ -255,7 +367,7 @@ class inGameScreen(Screen):
                 pygame.draw.rect(self.screen, handsOnColor, [0, (self.height // 3) * 2, self.width, self.height])
                 pygame.draw.rect(self.screen, listColor, [(self.width // 4) * 3, 0, self.width, self.height])
 
-                testCard.draw(self.width // 2, self.height // 2)
+                testCard.show(self.width // 2, self.height // 2)
 
                 # 버튼 출력
                 for btn in self.buttons:
@@ -266,5 +378,5 @@ class inGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
-    setting = inGameScreen()
+    setting = LobbyScreen()
     setting.run()
