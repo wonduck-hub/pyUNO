@@ -193,7 +193,7 @@ class LobbyScreen(Screen):
         self.setting = settingManager()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
-        self.nameText = ''
+        self.nameText = 'player'
         self.computerNum = 1
         self.font = pygame.font.SysFont('Arial', 35)
 
@@ -204,38 +204,12 @@ class LobbyScreen(Screen):
 
         self.buttons = []
 
-        self.exitButton = Button(self.width - 150, self.height - 50, 140, 40, "exit", self.screen, self.quitScreen)
-        self.saveButton = Button(self.width - 150, self.height - 100, 140, 40, "start", self.screen, self.startGame)
-
-        self.oneButton = Button(50, self.height // 2 + 60, 40, 40, "1", self.screen, self.one)
-        self.twoButton = Button(100, self.height // 2 + 60, 40, 40, "2", self.screen, self.two)
-        self.threeButton = Button(150, self.height // 2 + 60, 40, 40, "3", self.screen, self.three)
-        self.fourButton = Button(200, self.height // 2 + 60, 40, 40, "4", self.screen, self.four)
-        self.fiveButton = Button(250, self.height // 2 + 60, 40, 40, "5", self.screen, self.five)
+        self.exitButton = Button(50, self.height - 50, 140, 40, "exit", self.screen, self.quitScreen)
+        self.saveButton = Button(50, self.height - 100, 140, 40, "start", self.screen, self.startGame)
 
         self.buttons.append(self.exitButton)
         self.buttons.append(self.saveButton)
-        self.buttons.append(self.oneButton)
-        self.buttons.append(self.twoButton)
-        self.buttons.append(self.threeButton)
-        self.buttons.append(self.fourButton)
-        self.buttons.append(self.fiveButton)
     
-    def one(self):
-        self.computerNum = 1
-
-    def two(self):
-        self.computerNum = 2
-
-    def three(self):
-        self.computerNum = 3
-
-    def four(self):
-        self.computerNum = 4
-
-    def five(self):
-        self.computerNum = 5
-
     def startGame(self):
         SingleGameScreen(self.nameText, self.computerNum).run()
 
@@ -249,9 +223,30 @@ class LobbyScreen(Screen):
         color = color_inactive
         active = False
         done = False
+        listColor = [30, 30, 30]
+
+        font = pygame.font.SysFont('Arial', 20)
+
+        computer1Text = font.render('computer1', True, (128, 128, 128))
+        computer2Text = font.render('add to click', True, (128, 128, 128))
+        computer3Text = font.render('add to click', True, (128, 128, 128))
+        computer4Text = font.render('add to click', True, (128, 128, 128))
+        computer5Text = font.render('add to click', True, (128, 128, 128))
+
+        computer1 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, 0 + 2], [self.data['screenSize'][0] - 2, self.data['screenSize'][1] // 5 - 2])
+        computer2 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
+        computer3 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 2 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
+        computer4 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 3 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
+        computer5 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 4 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
+
+        computer2Color = [255, 255, 255]
+        computer3Color = [255, 255, 255]
+        computer4Color = [255, 255, 255]
+        computer5Color = [255, 255, 255]
     
         self.running = True
         while self.running:
+            pos = pygame.mouse.get_pos()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -263,14 +258,45 @@ class LobbyScreen(Screen):
                         active = not active
                     else:
                         active = False
-                    # Change the current color of the input box.
-                    color = color_active if active else color_inactive
+                    if computer2.collidepoint(event.pos):
+                        if computer2Color == [255, 255, 255]:
+                            computer2Color = [50, 50, 50]
+                            computer2Text = font.render('computer2', True, (128, 128, 128))
+                            self.computerNum = self.computerNum + 1
+                        else:
+                            computer2Color = [255, 255, 255]
+                            computer2Text = font.render('add to click', True, (128, 128, 128))
+                            self.computerNum = self.computerNum - 1
+                    if computer3.collidepoint(event.pos):
+                        if computer3Color == [255, 255, 255]:
+                            computer3Color = [50, 50, 50]
+                            computer3Text = font.render('computer3', True, (128, 128, 128))
+                            self.computerNum = self.computerNum + 1
+                        else:
+                            computer3Color = [255, 255, 255]
+                            computer3Text = font.render('add to click', True, (128, 128, 128))
+                            self.computerNum = self.computerNum - 1
+                    if computer4.collidepoint(event.pos):
+                        if computer4Color == [255, 255, 255]:
+                            computer4Color = [50, 50, 50]
+                            computer4Text = font.render('computer4', True, (128, 128, 128))
+                            self.computerNum = self.computerNum + 1
+                        else:
+                            computer4Color = [255, 255, 255]
+                            computer4Text = font.render('add to click', True, (128, 128, 128))
+                            self.computerNum = self.computerNum - 1
+                    if computer5.collidepoint(event.pos):
+                        if computer5Color == [255, 255, 255]:
+                            computer5Color = [50, 50, 50]
+                            computer5Text = font.render('computer5', True, (128, 128, 128))
+                            self.computerNum = self.computerNum + 1
+                        else:
+                            computer5Color = [255, 255, 255]
+                            computer5Text = font.render('add to click', True, (128, 128, 128))
+                            self.computerNum = self.computerNum - 1
                 if event.type == pygame.KEYDOWN:
                     if active:
-                        if event.key == pygame.K_RETURN:
-                            print(self.nameText)
-                            self.nameText = ''
-                        elif event.key == pygame.K_BACKSPACE:
+                        if event.key == pygame.K_BACKSPACE:
                             self.nameText = self.nameText[:-1]
                         else:
                             self.nameText += event.unicode
@@ -278,8 +304,20 @@ class LobbyScreen(Screen):
             # TODO 텍스트 박스에 텍스티 입력 추가
             self.screen.fill(self.data['backgroundColor'])
 
+            pygame.draw.rect(self.screen, listColor, [(self.data['screenSize'][0] // 4) * 3, 0, (self.data['screenSize'][0]), self.data['screenSize'][1]])
+
             self.screen.blit(self.textName, [50, 5])
-            self.screen.blit(self.textNumberOfComputer, [50, self.height // 2])
+            pygame.draw.rect(self.screen, [50, 50, 50], computer1)
+            pygame.draw.rect(self.screen, computer2Color, computer2)
+            pygame.draw.rect(self.screen, computer3Color, computer3)
+            pygame.draw.rect(self.screen, computer4Color, computer4)
+            pygame.draw.rect(self.screen, computer5Color, computer5)
+
+            self.screen.blit(computer1Text, [(self.data['screenSize'][0] // 4) * 3 + 50, 2])
+            self.screen.blit(computer2Text, [(self.data['screenSize'][0] // 4) * 3 + 50, (self.data['screenSize'][1] // 5)])
+            self.screen.blit(computer3Text, [(self.data['screenSize'][0] // 4) * 3 + 50, (self.data['screenSize'][1] // 5) * 2])
+            self.screen.blit(computer4Text, [(self.data['screenSize'][0] // 4) * 3 + 50, (self.data['screenSize'][1] // 5) * 3])
+            self.screen.blit(computer5Text, [(self.data['screenSize'][0] // 4) * 3 + 50, (self.data['screenSize'][1] // 5) * 4])
 
             txt_surface = font.render(self.nameText, True, color)
             width = max(200, txt_surface.get_width()+10)
@@ -364,8 +402,8 @@ class SingleGameScreen(Screen):
                 self.screen.fill(self.data['backgroundColor'])
 
                 # 영역 별 컬러
-                pygame.draw.rect(self.screen, handsOnColor, [0, (self.height // 3) * 2, self.width, self.height])
-                pygame.draw.rect(self.screen, listColor, [(self.width // 4) * 3, 0, self.width, self.height])
+                pygame.draw.rect(self.screen, handsOnColor, [0, (self.data['screenSize'][1] // 3) * 2, self.width, self.height])
+                pygame.draw.rect(self.screen, listColor, [(self.data['screenSize'][0] // 4) * 3, 0, self.width, self.height])
 
                 testCard.show(self.width // 2, self.height // 2)
 
