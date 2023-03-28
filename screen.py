@@ -1,8 +1,10 @@
 import pygame
+import sys
 from utils.saveManager import settingManager
 from utils.button import Button
 from card import NumberCard
 from player import HumanPlayer
+from player import ComputerPlayer
 
 class Screen:
     def __init__(self):
@@ -190,7 +192,6 @@ class SettingScreen(Screen):
 class LobbyScreen(Screen):
     def __init__(self):
         super().__init__()
-        self.setting = settingManager()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
         self.nameText = 'player'
@@ -204,14 +205,18 @@ class LobbyScreen(Screen):
 
         self.buttons = []
 
-        self.exitButton = Button(50, self.height - 50, 140, 40, "exit", self.screen, self.quitScreen)
-        self.saveButton = Button(50, self.height - 100, 140, 40, "start", self.screen, self.startGame)
+        self.exitButton = Button(50, self.data['screenSize'][1] // 2 + 60, 140, 40, "quit", self.screen, self.quitScreen)
+        self.saveButton = Button(50, self.data['screenSize'][1] // 2, 140, 40, "start", self.screen, self.startGame)
 
         self.buttons.append(self.exitButton)
         self.buttons.append(self.saveButton)
     
     def startGame(self):
-        SingleGameScreen(self.nameText, self.computerNum).run()
+        computerList = []
+        for i in range(0, self.computerNum):
+            computerList.append(ComputerPlayer('computer' + str(i + 1)))
+        SingleGameScreen(self.nameText, computerList).run()
+        self.data = self.setting.read()
 
     def quitScreen(self):
         self.running = False
@@ -233,11 +238,6 @@ class LobbyScreen(Screen):
         computer4Text = font.render('add to click', True, (128, 128, 128))
         computer5Text = font.render('add to click', True, (128, 128, 128))
 
-        computer1 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, 0 + 2], [self.data['screenSize'][0] - 2, self.data['screenSize'][1] // 5 - 2])
-        computer2 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
-        computer3 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 2 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
-        computer4 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 3 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
-        computer5 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 4 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
 
         computer2Color = [255, 255, 255]
         computer3Color = [255, 255, 255]
@@ -246,6 +246,12 @@ class LobbyScreen(Screen):
     
         self.running = True
         while self.running:
+            computer1 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, 0 + 2], [self.data['screenSize'][0] - 2, self.data['screenSize'][1] // 5 - 2])
+            computer2 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
+            computer3 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 2 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
+            computer4 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 3 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
+            computer5 = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, (self.data['screenSize'][1] // 5) * 4 + 2], [self.data['screenSize'][0] - 2, (self.data['screenSize'][1] // 5) - 2])
+            #self.data = self.setting.read()
             pos = pygame.mouse.get_pos()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -334,10 +340,10 @@ class LobbyScreen(Screen):
 
 class SingleGameScreen(Screen):
     
-    def __init__(self, name, computerNum):
+    def __init__(self, name, computerList):
         super().__init__()
         self.playerName = name
-        self.computerNum = computerNum
+        self.computerList = computerList
         self.setting = settingManager()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
@@ -402,8 +408,8 @@ class SingleGameScreen(Screen):
                 self.screen.fill(self.data['backgroundColor'])
 
                 # 영역 별 컬러
-                pygame.draw.rect(self.screen, handsOnColor, [0, (self.data['screenSize'][1] // 3) * 2, self.width, self.height])
-                pygame.draw.rect(self.screen, listColor, [(self.data['screenSize'][0] // 4) * 3, 0, self.width, self.height])
+                pygame.draw.rect(self.screen, handsOnColor, [0, (self.data['screenSize'][1] // 3) * 2, self.data['screenSize'][0], self.data['screenSize'][1]])
+                pygame.draw.rect(self.screen, listColor, [(self.data['screenSize'][0] // 4) * 3, 0, self.data['screenSize'][0], self.data['screenSize'][1]])
 
                 testCard.show(self.width // 2, self.height // 2)
 
