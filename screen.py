@@ -205,8 +205,8 @@ class LobbyScreen(Screen):
 
         self.buttons = []
 
-        self.exitButton = Button(50, self.data['screenSize'][1] // 2 + 60, 140, 40, "quit", self.screen, self.quitScreen)
-        self.saveButton = Button(50, self.data['screenSize'][1] // 2, 140, 40, "start", self.screen, self.startGame)
+        self.exitButton = Button(150, self.data['screenSize'][1] // 2 + 60, 140, 40, "quit", self.screen, self.quitScreen)
+        self.saveButton = Button(150, self.data['screenSize'][1] // 2, 140, 40, "start", self.screen, self.startGame)
 
         self.buttons.append(self.exitButton)
         self.buttons.append(self.saveButton)
