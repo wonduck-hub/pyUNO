@@ -1,6 +1,6 @@
 import json
 
-class settingManager:
+class SettingManager:
     def __init__(self):
         self.__filePath = './json/setting.json'
         self.__data = {'backgroundColor' : [0, 80, 0], 
@@ -20,5 +20,5 @@ class settingManager:
 
 if __name__ == "__main__":
     # 여기서 테스트
-    test = settingManager()
+    test = SettingManager()
     test.write()

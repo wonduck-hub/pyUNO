@@ -1,6 +1,6 @@
 import random
 import pygame
-from utils import saveManager
+from utils.saveManager import SettingManager
 
 red = (255, 0, 0)
 green = (0, 255, 0)
@@ -9,8 +9,7 @@ yellow = (255, 255, 0)
 white = (255, 255, 255)
 black = (0, 0, 0)
 
-colors = ["red", "yellow", "green", "blue"]
-color_values = [str(i) for i in range(10)] + ["skip", "reverse", "draw2", "oneMore"]
+color_values = [str(i) for i in range(10)]
 noncolor_values = ["changeColor", "defense", "joker"]
 
 
@@ -21,19 +20,19 @@ class Card:
         self.screen = screen
         self.color = color
         self.value = value
-        self.width = 30
-        self.height = 50  
-        self.face_up = True # 카드 뒤집어져 있는지 여부, 기본값 = back
+        self.width = 50
+        self.height = 80  
+        self.faceUp = True # 카드 뒤집어져 있는지 여부, 기본값 = back
         
-        image_path = f"card_image/{color}_{value}.png"
-        self.image = pygame.transform.scale(pygame.image.load(image_path), (self.width, self.height))
+        imagePath = f"./card_image/{color}_{value}.png"
+        self.image = pygame.transform.scale(pygame.image.load(imagePath), (self.width, self.height))
         
         self.rect = self.image.get_rect() # 카드의 사각형 영역
         
     def show(self, x, y): # 위치 정보 인자로 받아 카드 그리기
         self.x = x
         self.y = y
-        if self.face_up:
+        if self.faceUp:
             self.screen.blit(self.image, (self.x, self.y))
         else:
             self.image = pygame.transform.scale(pygame.image.load("card_image/back.png"), (self.width, self.height))
@@ -43,7 +42,7 @@ class Card:
         return self.rect.collidepoint(pos)
 
     def flip(self): # 카드 앞면 뒷면 전환
-      self.face_up = not self.face_up
+      self.faceUp = not self.faceUp
       
       
 class NumberCard(Card):
@@ -59,43 +58,43 @@ class AbilityCard(Card):
 class Deck:
 
     def __init__(self, screen):
+        self.colors = ["red", "yellow", "green", "blue"]
         self.cards = [] # 카드 덱
-        self.createDeck() # 카드 덱 초기화
         self.selectedCard = None
         self.screen = screen
-        self.data = saveManager()
+        self.data = SettingManager()
         
     def createDeck(self):
         self.cards = [] # cards 빈 리스트로 초기화
         # 카드 생성하여 cards에 추가
         # 나중에 수정
-        for color in colors:
+        for color in self.colors:
             for value in color_values: # 0~9 숫자카드
-                self.cards.append(NumberCard(color, self.screen, value))
+                self.cards.append(NumberCard(color, value, self.screen))
 
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-                
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
+        #나중에 기술카드 추가
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #        
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
 
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
 
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
-        self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
 
-        self.cards.append(AbilityCard(color, self.screen))
+        #self.cards.append(AbilityCard(color, self.screen))
 
-        return self.cards
         
     def prepareCard(self): # 게임 시작 전 플레이어에게 card 분배 및 카드더미 섞기
       handsOnCard = [] # 플레이어가 들고 있는 카드

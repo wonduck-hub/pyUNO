@@ -25,11 +25,6 @@ class Player:
         self.name = name
         self.handsOnCard = []
 
-    def showHandsOnCard(self):
-        for card in self.handsOnCard:
-            card.show(self.width // 2, self.height // 2)
-
-    
     #마지막 카드에 기반해 플레이어 패에서 낼 수 있는 카드 리스트 생성
     def playableCard(self, discardPileCard):
         playableCard=[]
@@ -51,6 +46,11 @@ class HumanPlayer(Player):
     def __init__(self, name):
         super().__init__(name)
         self.time=3000
+
+    def showHandsOnCard(self, x, y):
+        for i in range(len(self.handsOnCard)):
+            self.handsOnCard[i].show(x + (i * 50), y)
+
         
        
 # 컴퓨터 플레이어 클래스 
@@ -58,6 +58,19 @@ class ComputerPlayer(Player):
     def __init__(self, name):
         super().__init__(name)
         self.time=2000
+        self.font = pygame.font.Font(None, 20)
+
+    def showHandsOnCard(self, x, y, screen):
+        self.handsOnCard[0].faceUp = False
+        self.handsOnCard[0].width = 30
+        self.handsOnCard[0].height = 50
+        name = self.font.render(self.name, True, (128, 128, 128))
+        num = self.font.render('X' + str(len(self.handsOnCard)), True, (128, 128, 128))
+        screen.blit(name, (x, y))
+        screen.blit(num, (x + 50, y + 40))
+        self.handsOnCard[0].show(x, y + 25)
+        
+
 
 
 if __name__ == '__main__':

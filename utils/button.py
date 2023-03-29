@@ -3,18 +3,18 @@ import pygame
 class Button():
     def __init__(self, x, y, width, height, buttonText = 'button', 
                  screen = None, onClickFunction = None, onPress = False):
-        self.__x = x
-        self.__y = y
-        self.__width = width
-        self.__height = height
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
         self.__onClickFunction = onClickFunction
         self.__onePress = onPress
         self.__alreadyPressed = False
         self.__fillColors = {'nomal' : "#cccccc", 
                            "hover" : "#666666", 
                            "pressed" : "#333333"}
-        self.__buttonSurface = pygame.Surface((self.__width, self.__height))
-        self.__buttonRect = pygame.Rect(self.__x, self.__y, self.__width, self.__height)
+        self.__buttonSurface = pygame.Surface((self.width, self.height))
+        self.__buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.__font = pygame.font.SysFont('Arial', 35)
         self.__buttonSurf = self.__font.render(buttonText, True, (20, 20, 20))
         self.__screen = screen
@@ -24,7 +24,8 @@ class Button():
             self.__onClickFunction()
 
     def getPos(self):
-        return (self.__x, self.__y)
+        return (self.x, self.y)
+    
 
     def setOnClickFunction(self, onClickFunction):
         self.__onClickFunction = onClickFunction
