@@ -6,16 +6,24 @@ from pygame.locals import *
 
 # 버린 카드 클래스
 class DiscardPile:
-    def __init__(self,deck):
+    def __init__(self):
         self.cards = [] 
-        self.createPile(deck) 
+        self.font = pygame.font.Font(None, 20)
 
     def createPile(self,deck): #게임을 시작하기 위해 첫번째 카드 생성
         self.cards = []
         self.cards.append(deck.drawCard())
 
     def addCard(self, card): 
-        self.cards.append(card)
+        self.cards.insert(0, card)
+
+    def show(self, x, y, screen):
+        for i in range(len(self.cards)-1, -1, -1):
+            self.cards[i].show(x, y - i)
+
+        nowColor = self.font.render(self.cards[0].color, True, (255, 255, 255))
+        screen.blit(nowColor, (x + 60, y))
+        
 
 
 # 플레이어 클래스
@@ -49,7 +57,12 @@ class HumanPlayer(Player):
 
     def showHandsOnCard(self, x, y):
         for i in range(len(self.handsOnCard)):
-            self.handsOnCard[i].show(x + (i * 50), y)
+            self.handsOnCard[i].faceUp = True
+            self.handsOnCard[i].show(x + (i * 30), y)
+    
+    def addCard(self, card):
+        card.faceUp = True
+        self.handsOnCard.append(card)
 
         
        

@@ -51,9 +51,8 @@ class NumberCard(Card):
         
         
 class AbilityCard(Card):
-    def __init__(self, color, screen, ability = None):
-        super().__init__(color, screen, ability = None)
-        self.ability = ability
+    def __init__(self, color, value, screen):
+        super().__init__(color, value, screen)
       
 class Deck:
 
@@ -63,6 +62,16 @@ class Deck:
         self.selectedCard = None
         self.screen = screen
         self.data = SettingManager()
+
+    def show(self, x, y):
+        #self.cards[0].faceUp = False
+        #self.cards[0].show(x, y)
+        image = pygame.transform.scale(pygame.image.load("card_image/back.png"), (50, 80))
+        self.screen.blit(image, (x, y))
+
+    def ability(self):
+        pass
+
         
     def createDeck(self):
         self.cards = [] # cards 빈 리스트로 초기화
@@ -73,27 +82,34 @@ class Deck:
                 self.cards.append(NumberCard(color, value, self.screen))
 
         #나중에 기술카드 추가
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #        
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
+        #red
+        self.cards.append(AbilityCard("red", 'draw2', self.screen))
+        self.cards.append(AbilityCard("red", 'oneMore', self.screen))
+        self.cards.append(AbilityCard("red", 'reverse', self.screen))
+        self.cards.append(AbilityCard("red", 'skip', self.screen))
+                
+        #green
+        self.cards.append(AbilityCard("green", 'draw2', self.screen))
+        self.cards.append(AbilityCard("green", 'oneMore', self.screen))
+        self.cards.append(AbilityCard("green", 'reverse', self.screen))
+        self.cards.append(AbilityCard("green", 'skip', self.screen))
 
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
+        #yellow
+        self.cards.append(AbilityCard("yellow", 'draw2', self.screen))
+        self.cards.append(AbilityCard("yellow", 'oneMore', self.screen))
+        self.cards.append(AbilityCard("yellow", 'reverse', self.screen))
+        self.cards.append(AbilityCard("yellow", 'skip', self.screen))
 
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
-        #self.cards.append(AbilityCard(color, self.screen))
+        #blue
+        self.cards.append(AbilityCard("blue", 'draw2', self.screen))
+        self.cards.append(AbilityCard("blue", 'oneMore', self.screen))
+        self.cards.append(AbilityCard("blue", 'reverse', self.screen))
+        self.cards.append(AbilityCard("blue", 'skip', self.screen))
 
-        #self.cards.append(AbilityCard(color, self.screen))
+        #none color
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'defense', self.screen))
+        self.cards.append(AbilityCard("None", 'joker', self.screen))
 
         
     def prepareCard(self): # 게임 시작 전 플레이어에게 card 분배 및 카드더미 섞기
@@ -108,7 +124,8 @@ class Deck:
       random.shuffle(self.cards)
 
     def drawCard(self): # 카드덱에서 카드 뽑아냄 (player)
-        return self.cards.pop(0)
+        card = self.cards.pop(0)
+        return card
 
     def addCard(self, card): # 인자로 받은 card를 cards 리스트에 추가
         self.cards.append(card)

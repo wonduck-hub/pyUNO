@@ -6,6 +6,7 @@ from utils.button import Button
 from card import NumberCard, Deck
 from player import HumanPlayer
 from player import ComputerPlayer
+from player import DiscardPile
 
 class Screen:
     def __init__(self):
@@ -348,6 +349,9 @@ class SingleGameScreen(Screen):
         self.computerList  = []
         self.computerList = self.computerList + computerList
         self.deck = Deck(self.screen)
+        self.discard = DiscardPile()
+        self.nowTurnPlayer = None
+        self.index = 0
 
         self.setting = SettingManager()
         self.width = self.screen.get_width()
@@ -362,7 +366,15 @@ class SingleGameScreen(Screen):
         self.escButtons.append(self.quitButton)
         self.escButtons.append(self.settingButton)
         
+        self.buttons = []
+
         self.unoButton = Button(10, self.data['screenSize'][1] - 50, 100, 35, 'UNO', self.screen)
+        self.drawCardButton = Button(self.data['screenSize'][0] // 4 - 80, self.data['screenSize'][1] // 3,60, 35, 'add', self.screen, self.drawCard)
+
+    def drawCard(self):
+        if isinstance(self.nowTurnPlayer, HumanPlayer):
+            self.player.addCard(self.deck.drawCard())
+            self.index = self.index + 1
 
     def quitScreen(self):
         self.running = False
@@ -373,6 +385,7 @@ class SingleGameScreen(Screen):
         self.data = self.setting.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         self.unoButton = Button(10, self.data['screenSize'][1] - 50, 100, 35, 'UNO', self.screen)
+        self.drawCardButton = Button(self.data['screenSize'][0] // 4 - 80, self.data['screenSize'][1] // 3,60, 35, 'add', self.screen)
 
     def run(self):
 
@@ -384,20 +397,27 @@ class SingleGameScreen(Screen):
         font = pygame.font.SysFont('Arial', 25)
         self.deck.createDeck()
         self.player.handsOnCard = self.player.handsOnCard + self.deck.prepareCard()
+        self.deck.shuffle()
         nowTurnList = self.computerList + [self.player]
-        random.shuffle(nowTurnList)
+        random.shuffle(nowTurnList)#시작 플레이어 설정
+        self.discard.addCard(self.deck.drawCard())
 
-        for i in range(len(self.computerList)):
+        self.nowTurnPlayer = nowTurnList[self.index % len(nowTurnList)]
+
+
+        for i in range(len(self.computerList)):#카드 분배
             self.computerList[i].handsOnCard = self.computerList[i].handsOnCard + self.deck.prepareCard()
 
 
         self.running = True
         while self.running:
-            nowTurnText = font.render('now turn : ' + nowTurnList[0].name, True, (255, 255, 255))
+            self.nowTurnPlayer = nowTurnList[self.index % len(nowTurnList)]
+            nowTurnText = font.render('now turn : ' + self.nowTurnPlayer.name, True, (255, 255, 255))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     self.running = False
+                
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         if isInputEsc:
@@ -405,7 +425,6 @@ class SingleGameScreen(Screen):
                         else:
                             isInputEsc = True
                 
-            
             if isInputEsc:
                 self.screen.fill([255, 255, 255])
 
@@ -422,7 +441,12 @@ class SingleGameScreen(Screen):
                 pygame.draw.rect(self.screen, handsOnColor, [0, (self.data['screenSize'][1] // 3) * 2, self.data['screenSize'][0], self.data['screenSize'][1]])
                 pygame.draw.rect(self.screen, listColor, [(self.data['screenSize'][0] // 4) * 3, 0, self.data['screenSize'][0], self.data['screenSize'][1]])
 
+                #카드들 출력
                 self.player.showHandsOnCard(self.data['screenSize'][0] // 6, self.data['screenSize'][1] // 10 * 7)
+
+                self.deck.show(self.data['screenSize'][0] // 4, self.data['screenSize'][1] // 3)
+
+                self.discard.show(self.data['screenSize'][0] // 4 * 2 - 50, self.data['screenSize'][1] // 3, self.screen)
 
                 #컴퓨터 카드 출력
                 for i in range(len(self.computerList)):
@@ -430,11 +454,12 @@ class SingleGameScreen(Screen):
 
                 # 버튼 출력
                 self.unoButton.process()
+                self.drawCardButton.process()
 
             pygame.display.flip()
 
 
 if __name__ == '__main__':
     pygame.init()
-    setting = SingleGameScreen('player', [ComputerPlayer('computer1'), ComputerPlayer('computer2'), ComputerPlayer('computer3'), ])
+    setting = SingleGameScreen('player', [ComputerPlayer('computer1')])
     setting.run()
