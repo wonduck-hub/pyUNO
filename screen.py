@@ -13,7 +13,120 @@ class Screen:
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         pygame.display.set_caption('PyUNO')
         self.running = True
+        
 
+class MapScreen(Screen):
+  def __init__(self):
+      super().__init__()
+      # self.setting = settingManager()
+      self.width = self.screen.get_width()
+      self.height = self.screen.get_height()
+      self.screen = pygame.display.set_mode(self.data['screenSize'])
+      
+      self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), (self.width, self.height))
+      self.area1 = pygame.image.load("map_image/area_1.png")
+      self.area2 = pygame.image.load("map_image/area_2.png")
+      self.area3 = pygame.image.load("map_image/area_3.png")
+      self.area4 = pygame.image.load("map_image/area_4.png")
+      
+      # 이미지 위치
+      self.areas = [
+            (100, 0),
+            (450, 50),
+            (100, 200),
+            (450, 250)
+        ]
+
+      self.mapRect = self.mapImage.get_rect()
+      self.area1Rect = self.area1.get_rect(topleft = self.areas[0])
+      self.area2Rect = self.area2.get_rect(topleft = self.areas[1])
+      self.area3Rect = self.area3.get_rect(topleft = self.areas[2])
+      self.area4Rect = self.area4.get_rect(topleft = self.areas[3])
+      
+      # 각 단계 잠금 상태 초기화
+      self.unlockArea1 = True
+      self.unlockArea2 = False
+      self.unlockArea3 = False
+      self.unlockArea4 = False
+  
+  def draw(self):
+    self.screen.blit(self.mapImage, (0, 0))
+    
+    for i in range(4):
+      self.screen.blit(eval(f"self.area{i+1}"), self.areas[i])
+
+        
+  def askStart(self, area):
+    # 창 생성
+    dialog_x = 350
+    dialog_y = 100
+    dialog = pygame.Surface((dialog_x, dialog_y))
+    dialog.fill((255, 255, 255))
+    
+    # 텍스트 출력
+    font = pygame.font.SysFont(None, 30)
+    text = font.render(f"Do you want to Battle in Level{area}?", True, (0, 0, 0))
+    textRect = text.get_rect(center = (dialog_x // 2, dialog_y // 2))
+    dialog.blit(text, textRect)
+    
+    # 버튼 생성
+    acceptButton = pygame.Rect(90, 65, 50, 20)
+    refuseButton = pygame.Rect(210, 65, 50, 20)
+    pygame.draw.rect(dialog, (255, 0, 0), acceptButton)
+    pygame.draw.rect(dialog, (0, 0, 255), refuseButton)
+    
+    acceptButtonText = font.render("Yes", True, (255, 255, 255))
+    acceptButtonTextRect = acceptButtonText.get_rect(center = acceptButton.center)
+    dialog.blit(acceptButtonText, acceptButtonTextRect)
+    
+    refuseButtonText = font.render("No", True, (255, 255, 255))
+    refuseButtonTextRect = refuseButtonText.get_rect(center = refuseButton.center)
+    dialog.blit(refuseButtonText, refuseButtonTextRect)
+    
+    dialogRect = dialog.get_rect(center = self.screen.get_rect().center)
+    self.screen.blit(dialog, dialogRect)
+    
+    # while True:
+    #   for event in pygame.event.get():
+    #     if event.type == pygame.MOUSEBUTTONDOWN:
+    #       if acceptButton.collidepoint(event.pos):
+    #         return True
+    #       elif refuseButton.collidepoint(event.pos):
+    #         return False
+      
+    #   pygame.display.update()
+    
+  def run(self):
+  
+    map = MapScreen()
+    map.draw()
+    
+    self.running = True
+    while self.running:
+      for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+          pygame.quit()
+          self.running = False
+          
+        # 마우스 클릭으로 지역 선택
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+          mousePos = pygame.mouse.get_pos()
+          if self.area1Rect.collidepoint(mousePos):
+            self.askStart(1)
+            
+          elif self.area2Rect.collidepoint(mousePos):    
+            self.askStart(2)
+             
+          elif self.area3Rect.collidepoint(mousePos):
+            self.askStart(3)
+              
+          elif self.area4Rect.collidepoint(mousePos):  
+            self.askStart(4)
+              
+      
+      pygame.display.flip()
+      
+      
 class StartScreen(Screen):
     def __init__(self):
         super().__init__()
@@ -422,5 +535,8 @@ class SingleGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
+    # setting = LobbyScreen()
+    # setting.run()
     setting = LobbyScreen()
     setting.run()
+   
