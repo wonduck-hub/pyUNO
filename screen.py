@@ -262,6 +262,12 @@ class SettingScreen(Screen):
 
         self.resetButton = Button(self.width - 150, 50, 140, 40, "reset", self.screen, self.resetData)
         
+        self.keyUpLabel = Button(30,240, 140, 40, "Up", self.screen)
+        self.keyDownLabel = Button(30,290, 140, 40, "Down", self.screen)
+        self.keyLeftLabel = Button(30,340, 140, 40, "Left", self.screen)
+        self.keyRightLabel = Button(30, 390, 140, 40, "Right", self.screen)
+        self.keyEnterLabel = Button(330, 240, 140, 40, "Enter", self.screen)
+
         self.buttons.append(self.screenSizeSmallButton)
         self.buttons.append(self.screenSizeMiddleButton)
         self.buttons.append(self.screenSizeLargeButton)
@@ -270,6 +276,13 @@ class SettingScreen(Screen):
         self.buttons.append(self.saveButton)
         self.buttons.append(self.exitButton)
         self.buttons.append(self.resetButton)
+        self.buttons.append(self.keyUpLabel)
+        self.buttons.append(self.keyDownLabel)
+        self.buttons.append(self.keyLeftLabel)
+        self.buttons.append(self.keyRightLabel)
+        self.buttons.append(self.keyEnterLabel)
+
+        self.clicked=False
 
     def smallScreen(self):
         self.data['screenSize'] = [650, 400]
@@ -292,12 +305,71 @@ class SettingScreen(Screen):
         self.setting.write(self.data)
 
     def run(self):
+
+        font = pygame.font.Font(None, 32)
+    
+        keyUpText = font.render( self.data['keyControl'][0], True, (128, 128, 128))
+        keyDownText = font.render(self.data['keyControl'][1], True, (128, 128, 128))
+        keyLeftText = font.render(self.data['keyControl'][2], True, (128, 128, 128))
+        keyRightText = font.render(self.data['keyControl'][3], True, (128, 128, 128))
+        keyEnterText = font.render(self.data['keyControl'][4], True, (128, 128, 128))
+  
+        boxColor = [255, 255, 255]
+
         self.running = True
         while self.running:
+            keyUpBox = pygame.Rect(180,240, 140, 40)
+            keyDownBox = pygame.Rect(180,290, 140, 40)
+            keyLeftBox = pygame.Rect(180,340, 140, 40)
+            keyRightBox = pygame.Rect(180,390, 140, 40)
+            keyEnterBox = pygame.Rect(480,240, 140, 40)
+
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     self.running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if keyUpBox.collidepoint(event.pos):
+                        keyUpText = font.render("", True, (128, 128, 128))
+                        number=0
+                        self.clicked=True
+                    if keyDownBox.collidepoint(event.pos):
+                        keyDownText = font.render("", True, (128, 128, 128))
+                        number=1
+                        self.clicked=True
+                    if keyLeftBox.collidepoint(event.pos):
+                        keyLeftText = font.render("", True, (128, 128, 128))
+                        number=2
+                        self.clicked=True
+                    if keyRightBox.collidepoint(event.pos):
+                        keyRightText = font.render("", True, (128, 128, 128))
+                        number=3
+                        self.clicked=True
+                    if keyEnterBox.collidepoint(event.pos):
+                        keyEnterText = font.render("", True, (128, 128, 128))
+                        number=4
+                        self.clicked=True
+                if event.type == pygame.KEYDOWN and self.clicked:
+                        newKey = pygame.key.name(event.key)
+                        self.data['keyControl'][number] =  newKey
+                        self.setting.write(self.data)
+                        if number==0:
+                            keyUpText = font.render(newKey, True, (128, 128, 128))
+                            self.clicked=False
+                        elif number==1:
+                            keyDownText = font.render(newKey, True, (128, 128, 128))
+                            self.clicked=False
+                        elif number==2:
+                            keyLeftText = font.render(newKey, True, (128, 128, 128))
+                            self.clicked=False
+                        elif number==3:
+                            keyRightText = font.render(newKey, True, (128, 128, 128))
+                            self.clicked=False
+                        elif number==4:
+                            keyEnterText = font.render(newKey, True, (128, 128, 128))
+                            self.clicked=False
+                    
 
             self.screen.fill(self.data['backgroundColor'])
 
@@ -306,6 +378,18 @@ class SettingScreen(Screen):
 
             for btn in self.buttons:
                 btn.process()
+            
+            pygame.draw.rect(self.screen, boxColor, keyUpBox)
+            pygame.draw.rect(self.screen, boxColor, keyDownBox)
+            pygame.draw.rect(self.screen, boxColor, keyLeftBox)
+            pygame.draw.rect(self.screen, boxColor, keyRightBox)
+            pygame.draw.rect(self.screen, boxColor, keyEnterBox)
+
+            self.screen.blit(keyUpText, (180,240))
+            self.screen.blit(keyDownText, (180,290))
+            self.screen.blit(keyLeftText, (180,340))
+            self.screen.blit(keyRightText, (180,390))
+            self.screen.blit(keyEnterText, (480,240))
 
             pygame.display.flip()
         
@@ -661,14 +745,14 @@ class SingleGameScreen(Screen):
                 quitButton.process()
                 pygame.display.flip()
 
-            elif isInputEsc:
+            if isInputEsc:
                 self.screen.fill([255, 255, 255])
 
                 for btn in self.escButtons:
                     btn.process()
 
-                #TODO 이 상태에선 타이머는 멈춰 있어야 함
                 pygame.display.flip()
+                #TODO 이 상태에선 타이머는 멈춰 있어야 함
 
             else:
                 #현제 턴 표시
@@ -683,7 +767,6 @@ class SingleGameScreen(Screen):
                 # 영역 별 컬러
                 pygame.draw.rect(self.screen, handsOnColor, [0, (self.data['screenSize'][1] // 3) * 2, self.data['screenSize'][0], self.data['screenSize'][1]])
                 pygame.draw.rect(self.screen, listColor, [(self.data['screenSize'][0] // 4) * 3, 0, self.data['screenSize'][0], self.data['screenSize'][1]])
-
                 #카드들 출력
                 self.player.showHandsOnCard(50, self.data['screenSize'][1] // 10 * 7)
 
