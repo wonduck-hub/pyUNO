@@ -617,8 +617,7 @@ class SingleGameScreen(Screen):
             self.nowTurnPlayer.addCard(self.deck.drawCard())
             self.nowTurnPlayer.addCard(self.deck.drawCard())
         elif self.discard.cards[0].value == 'defense':
-            #TODO 승리 카드
-            pass
+            self.nowTurnPlayer.handsOnCard = []
         elif self.discard.cards[0].value == 'changeColor':
             screen = pygame.display.set_mode(self.data['screenSize'])
             self.runChangeColor = True
@@ -687,7 +686,7 @@ class SingleGameScreen(Screen):
         font = pygame.font.SysFont('Arial', 25)
         winFont = pygame.font.SysFont('Arial', 60)
         self.deck.createDeck()
-        self.player.handsOnCard = self.player.handsOnCard + [AbilityCard('None', 'joker', self.screen)] #self.deck.prepareCard()
+        self.player.handsOnCard = self.player.handsOnCard + self.deck.prepareCard()
         self.deck.shuffle()
         self.nowTurnList = self.computerList + [self.player]
         self.discard.addCard(self.deck.drawCard())
