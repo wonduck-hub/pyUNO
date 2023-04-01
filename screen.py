@@ -262,11 +262,11 @@ class SettingScreen(Screen):
 
         self.resetButton = Button(self.width - 150, 50, 140, 40, "reset", self.screen, self.resetData)
         
-        self.keyUpLabel = Button(30,240, 140, 40, "Up", self.screen)
-        self.keyDownLabel = Button(30,290, 140, 40, "Down", self.screen)
-        self.keyLeftLabel = Button(30,340, 140, 40, "Left", self.screen)
-        self.keyRightLabel = Button(30, 390, 140, 40, "Right", self.screen)
-        self.keyEnterLabel = Button(330, 240, 140, 40, "Enter", self.screen)
+        self.keyUpLabel = Button(30,200, 140, 40, "Up", self.screen)
+        self.keyDownLabel = Button(30,250, 140, 40, "Down", self.screen)
+        self.keyLeftLabel = Button(30,300, 140, 40, "Left", self.screen)
+        self.keyRightLabel = Button(30, 350, 140, 40, "Right", self.screen)
+        self.keyEnterLabel = Button(330, 200, 140, 40, "Enter", self.screen)
 
         self.buttons.append(self.screenSizeSmallButton)
         self.buttons.append(self.screenSizeMiddleButton)
@@ -318,11 +318,11 @@ class SettingScreen(Screen):
 
         self.running = True
         while self.running:
-            keyUpBox = pygame.Rect(180,240, 140, 40)
-            keyDownBox = pygame.Rect(180,290, 140, 40)
-            keyLeftBox = pygame.Rect(180,340, 140, 40)
-            keyRightBox = pygame.Rect(180,390, 140, 40)
-            keyEnterBox = pygame.Rect(480,240, 140, 40)
+            keyUpBox = pygame.Rect(180,200, 140, 40)
+            keyDownBox = pygame.Rect(180,250, 140, 40)
+            keyLeftBox = pygame.Rect(180,300, 140, 40)
+            keyRightBox = pygame.Rect(180,350, 140, 40)
+            keyEnterBox = pygame.Rect(480,200, 140, 40)
 
             
             for event in pygame.event.get():
@@ -385,11 +385,11 @@ class SettingScreen(Screen):
             pygame.draw.rect(self.screen, boxColor, keyRightBox)
             pygame.draw.rect(self.screen, boxColor, keyEnterBox)
 
-            self.screen.blit(keyUpText, (180,240))
-            self.screen.blit(keyDownText, (180,290))
-            self.screen.blit(keyLeftText, (180,340))
-            self.screen.blit(keyRightText, (180,390))
-            self.screen.blit(keyEnterText, (480,240))
+            self.screen.blit(keyUpText, (180,200))
+            self.screen.blit(keyDownText, (180,250))
+            self.screen.blit(keyLeftText, (180,300))
+            self.screen.blit(keyRightText, (180,350))
+            self.screen.blit(keyEnterText, (480,200))
 
             pygame.display.flip()
         
@@ -745,7 +745,7 @@ class SingleGameScreen(Screen):
                 quitButton.process()
                 pygame.display.flip()
 
-            if isInputEsc:
+            elif isInputEsc:
                 self.screen.fill([255, 255, 255])
 
                 for btn in self.escButtons:
