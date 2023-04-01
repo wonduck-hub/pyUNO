@@ -1,4 +1,4 @@
-import card
+from card import NumberCard, AbilityCard
 import random
 import pygame
 from pygame.locals import *
@@ -17,13 +17,18 @@ class DiscardPile:
     def addCard(self, card): 
         self.cards.insert(0, card)
 
-    def show(self, x, y, screen):
-        for i in range(len(self.cards)-1, -1, -1):
-            self.cards[i].show(x, y - i)
+    def show(self, x, y, changeColor, screen):
+        self.cards[0].show(x, y)
 
-        nowColor = self.font.render(self.cards[0].color, True, (255, 255, 255))
-        screen.blit(nowColor, (x + 60, y))
-        
+        if self.cards[0].color != changeColor and self.cards[0].value != 'changeColor':
+            changeColor = 'None'
+
+        if changeColor == 'None':
+            nowColor = self.font.render(self.cards[0].color, True, (255, 255, 255))
+            screen.blit(nowColor, (x + 60, y))
+        else:
+            nowColor = self.font.render(changeColor, True, (255, 255, 255))
+            screen.blit(nowColor, (x + 60, y))
 
 
 # 플레이어 클래스
@@ -32,6 +37,9 @@ class Player:
         # 플레이어 패 생성
         self.name = name
         self.handsOnCard = []
+        self.isWin = False
+        self.time = 2000
+        self.checkUno = False
 
     #마지막 카드에 기반해 플레이어 패에서 낼 수 있는 카드 리스트 생성
     def playableCard(self, discardPileCard):
@@ -46,6 +54,14 @@ class Player:
                     playableCard.append(card)   
         return playableCard
     
+    def addCard(self, card):
+        card.faceUp = True
+        self.handsOnCard.append(card)
+    
+    def insertCard(self, index):
+        result = self.handsOnCard.pop(index)
+        return result
+    
     
                 
 
@@ -53,35 +69,73 @@ class Player:
 class HumanPlayer(Player):
     def __init__(self, name):
         super().__init__(name)
-        self.time=3000
+        self.totalTime = 30
 
     def showHandsOnCard(self, x, y):
         for i in range(len(self.handsOnCard)):
-            self.handsOnCard[i].faceUp = True
-            self.handsOnCard[i].show(x + (i * 30), y)
+            if self.handsOnCard[i].canInsert:
+                self.handsOnCard[i].show(x + (i * 50), y - 10)
+            else:
+                self.handsOnCard[i].show(x + (i * 50), y)
     
-    def addCard(self, card):
-        card.faceUp = True
-        self.handsOnCard.append(card)
+    def checkCandInsert(self, discard, changeColor):
+        for i in range(len(self.handsOnCard)):
+            if discard.cards[0].value == 'changeColor':
+                if self.handsOnCard[i].color == changeColor or self.handsOnCard[i].value == discard.cards[0].value or self.handsOnCard[i].color == 'None':
+                    self.handsOnCard[i].canInsert = True
+                else:
+                    self.handsOnCard[i].canInsert = False
+            elif discard.cards[0].value == 'joker':
+                self.handsOnCard[i].canInsert = True
+            elif isinstance(discard.cards[0], NumberCard):
+                if self.handsOnCard[i].color == discard.cards[0].color or self.handsOnCard[i].value == discard.cards[0].value or self.handsOnCard[i].color == 'None':
+                    self.handsOnCard[i].canInsert = True
+                else:
+                    self.handsOnCard[i].canInsert = False
+            elif isinstance(discard.cards[0], AbilityCard):
+                if self.handsOnCard[i].color == discard.cards[0].color or self.handsOnCard[i].color == 'None':
+                    self.handsOnCard[i].canInsert = True
+                else:
+                    self.handsOnCard[i].canInsert = False
+    
+    def pushCard(self, index, discard):
+        discard.addCard(self.insertCard(index))
 
-        
        
 # 컴퓨터 플레이어 클래스 
 class ComputerPlayer(Player):
     def __init__(self, name):
         super().__init__(name)
-        self.time=2000
         self.font = pygame.font.Font(None, 20)
 
     def showHandsOnCard(self, x, y, screen):
-        self.handsOnCard[0].faceUp = False
-        self.handsOnCard[0].width = 30
-        self.handsOnCard[0].height = 50
         name = self.font.render(self.name, True, (128, 128, 128))
         num = self.font.render('X' + str(len(self.handsOnCard)), True, (128, 128, 128))
         screen.blit(name, (x, y))
         screen.blit(num, (x + 50, y + 40))
-        self.handsOnCard[0].show(x, y + 25)
+        image = pygame.transform.scale(pygame.image.load("card_image/back.png"), (30, 50))
+        screen.blit(image, (x, y + 25))
+    
+    def playTurn(self, discard, changeColor):
+        for i in range(len(self.handsOnCard)):
+            if discard.cards[0].value == 'changeColor':
+                if self.handsOnCard[i].color == changeColor or self.handsOnCard[i].value == discard.cards[0].value or self.handsOnCard[i].color == 'None':
+                    discard.addCard(self.insertCard(i))
+                    return True
+            elif discard.cards[0].value == 'joker':
+                discard.addCard(self.insertCard(i))
+                return True
+            elif isinstance(discard.cards[0], NumberCard):
+                if self.handsOnCard[i].color == discard.cards[0].color or self.handsOnCard[i].value == discard.cards[0].value or self.handsOnCard[i].color == 'None':
+                    discard.addCard(self.insertCard(i))
+                    return True
+            elif isinstance(discard.cards[0], AbilityCard):
+                if self.handsOnCard[i].color == discard.cards[0].color or self.handsOnCard[i].color == 'None':
+                    discard.addCard(self.insertCard(i))
+                    return True
+        else:
+            return False
+
         
 
 
@@ -96,14 +150,6 @@ if __name__ == '__main__':
     screen.fill(bg_color)
 
 
-    # 카드덱 생성
-    deck = card.Deck()
-
-    human_plyr = HumanPlayer(deck) #사용자 객체 
-    pc_plyr = ComputerPlayer(deck) # 컴퓨터 객체
-
-    discardPile = DiscardPile(deck) # 버린 카드 객체
-    discardPileCard = discardPile.cards # 버린 카드 리스트
 
 
     running = True

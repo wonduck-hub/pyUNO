@@ -1,9 +1,10 @@
 import pygame
 import random
 import sys
+import time
 from utils.saveManager import SettingManager
 from utils.button import Button
-from card import NumberCard, Deck
+from card import NumberCard, Deck, AbilityCard
 from player import HumanPlayer
 from player import ComputerPlayer
 from player import DiscardPile
@@ -15,7 +16,117 @@ class Screen:
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         pygame.display.set_caption('PyUNO')
         self.running = True
+        
 
+class MapScreen(Screen):
+    def __init__(self):
+        super().__init__()
+        # self.setting = settingManager()
+        self.width = self.screen.get_width()
+        self.height = self.screen.get_height()
+        self.screen = pygame.display.set_mode(self.data['screenSize'])
+      
+        self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), (self.width, self.height))
+        self.area1 = pygame.image.load("map_image/area_1.png")
+        self.area2 = pygame.image.load("map_image/area_2.png")
+        self.area3 = pygame.image.load("map_image/area_3.png")
+        self.area4 = pygame.image.load("map_image/area_4.png")
+      
+        # 이미지 위치
+        self.areas = [
+              (100, 0),
+              (450, 50),
+              (100, 200),
+              (450, 250)
+          ]
+
+        self.mapRect = self.mapImage.get_rect()
+        self.area1Rect = self.area1.get_rect(topleft = self.areas[0])
+        self.area2Rect = self.area2.get_rect(topleft = self.areas[1])
+        self.area3Rect = self.area3.get_rect(topleft = self.areas[2])
+        self.area4Rect = self.area4.get_rect(topleft = self.areas[3])
+      
+        # 각 단계 잠금 상태 초기화
+        self.unlockArea1 = True
+        self.unlockArea2 = False
+        self.unlockArea3 = False
+        self.unlockArea4 = False
+
+        self.quitButton = Button(15, 15, 60, 40, "quit", self.screen, self.quit)
+    
+    def quit(self):
+        self.running = False
+
+    def draw(self):
+        self.screen.blit(self.mapImage, (0, 0))
+      
+        for i in range(4):
+            self.screen.blit(eval(f"self.area{i+1}"), self.areas[i])
+
+          
+    def askStart(self, area):
+        # 창 생성
+        dialog_x = 350
+        dialog_y = 100
+        dialog = pygame.Surface((dialog_x, dialog_y))
+        dialog.fill((255, 255, 255))
+      
+        # 텍스트 출력
+        font = pygame.font.SysFont(None, 30)
+        text = font.render(f"Do you want to Battle in Level{area}?", True, (0, 0, 0))
+        textRect = text.get_rect(center = (dialog_x // 2, dialog_y // 2))
+        dialog.blit(text, textRect)
+      
+        # 버튼 생성
+        acceptButton = pygame.Rect(90, 65, 50, 20)
+        refuseButton = pygame.Rect(210, 65, 50, 20)
+        pygame.draw.rect(dialog, (255, 0, 0), acceptButton)
+        pygame.draw.rect(dialog, (0, 0, 255), refuseButton)
+      
+        acceptButtonText = font.render("Yes", True, (255, 255, 255))
+        acceptButtonTextRect = acceptButtonText.get_rect(center = acceptButton.center)
+        dialog.blit(acceptButtonText, acceptButtonTextRect)
+      
+        refuseButtonText = font.render("No", True, (255, 255, 255))
+        refuseButtonTextRect = refuseButtonText.get_rect(center = refuseButton.center)
+        dialog.blit(refuseButtonText, refuseButtonTextRect)
+      
+        dialogRect = dialog.get_rect(center = self.screen.get_rect().center)
+        self.screen.blit(dialog, dialogRect)
+    
+    def run(self):
+  
+        map = MapScreen()
+        map.draw()
+        
+        self.running = True
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    self.running = False
+                
+                # 마우스 클릭으로 지역 선택
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mousePos = pygame.mouse.get_pos()
+                    if self.area1Rect.collidepoint(mousePos):
+                        self.askStart(1)
+                        
+                    elif self.area2Rect.collidepoint(mousePos):    
+                        self.askStart(2)
+                        
+                    elif self.area3Rect.collidepoint(mousePos):
+                        self.askStart(3)
+                        
+                    elif self.area4Rect.collidepoint(mousePos):  
+                        self.askStart(4)
+            
+            self.quitButton.process()
+                
+        
+            pygame.display.flip()
+      
+      
 class StartScreen(Screen):
     def __init__(self):
         super().__init__()
@@ -44,10 +155,12 @@ class StartScreen(Screen):
         self.startButton = Button(30, 210, 140, 40, "single",self.screen)
         self.menuButton = Button(30, 280, 140, 40, "menu", self.screen)
         self.quitButton = Button(30, 350, 140, 40, "quit", self.screen, pygame.quit)
+        self.storyButton = Button(190, 210, 140, 40, "story", self.screen)
 
         self.buttons.append(self.startButton)
         self.buttons.append(self.menuButton)
         self.buttons.append(self.quitButton)
+        self.buttons.append(self.storyButton)
 
     def showSetting(self):
         settingMenu = SettingScreen()
@@ -59,10 +172,15 @@ class StartScreen(Screen):
         inGame = LobbyScreen()
         inGame.run()
     
+    def showMap(self):
+        map = MapScreen()
+        map.run()
+    
     def run(self):
 
         self.menuButton.setOnClickFunction(self.showSetting)
         self.startButton.setOnClickFunction(self.showInGame)
+        self.storyButton.setOnClickFunction(self.showMap)
 
         temp = 0
         buttonIndex = 0
@@ -207,8 +325,8 @@ class LobbyScreen(Screen):
 
         self.buttons = []
 
-        self.exitButton = Button(50, self.data['screenSize'][1] // 2 + 60, 140, 40, "quit", self.screen, self.quitScreen)
-        self.saveButton = Button(50, self.data['screenSize'][1] // 2, 140, 40, "start", self.screen, self.startGame)
+        self.exitButton = Button(150, self.data['screenSize'][1] // 2 + 60, 140, 40, "quit", self.screen, self.quitScreen)
+        self.saveButton = Button(150, self.data['screenSize'][1] // 2, 140, 40, "start", self.screen, self.startGame)
 
         self.buttons.append(self.exitButton)
         self.buttons.append(self.saveButton)
@@ -219,6 +337,7 @@ class LobbyScreen(Screen):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
         SingleGameScreen(self.nameText, computerList).run()
         self.data = self.setting.read()
+        self.running = False
 
     def quitScreen(self):
         self.running = False
@@ -351,7 +470,14 @@ class SingleGameScreen(Screen):
         self.deck = Deck(self.screen)
         self.discard = DiscardPile()
         self.nowTurnPlayer = None
-        self.index = 0
+        self.index = random.randrange(0, 4)
+        self.turnNum = 1
+        self.comTurnTime = 0
+        self.humanStartTime = 0
+        self.nowTurnList = []
+        self.runChangeColor = True
+        self.changeColor = 'None'
+        self.haveWiner = False
 
         self.setting = SettingManager()
         self.width = self.screen.get_width()
@@ -368,16 +494,87 @@ class SingleGameScreen(Screen):
         
         self.buttons = []
 
-        self.unoButton = Button(10, self.data['screenSize'][1] - 50, 100, 35, 'UNO', self.screen)
+        self.unoButton = Button(10, self.data['screenSize'][1] - 50, 100, 35, 'UNO', self.screen, self.uno)
         self.drawCardButton = Button(self.data['screenSize'][0] // 4 - 80, self.data['screenSize'][1] // 3,60, 35, 'add', self.screen, self.drawCard)
 
+    def endTurn(self):
+        self.index = self.index + self.turnNum
+        self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
+        self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time
+        self.humanStartTime = pygame.time.get_ticks()
+
     def drawCard(self):
-        if isinstance(self.nowTurnPlayer, HumanPlayer):
-            self.player.addCard(self.deck.drawCard())
-            self.index = self.index + 1
+        self.nowTurnPlayer.addCard(self.deck.drawCard())
+        self.endTurn()
+            
 
     def quitScreen(self):
         self.running = False
+
+    def ability(self, ability):
+        if self.discard.cards[0].value == 'draw2':
+            self.endTurn()
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
+        elif self.discard.cards[0].value == 'oneMore':
+            self.index = self.index - self.turnNum
+            self.endTurn()
+        elif self.discard.cards[0].value == 'reverse':
+            self.turnNum = self.turnNum * -1
+            self.endTurn()
+        elif self.discard.cards[0].value == 'skip':
+            self.index = self.index + self.turnNum
+            self.endTurn()
+        elif self.discard.cards[0].value == 'joker':
+            self.endTurn()
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
+        elif self.discard.cards[0].value == 'defense':
+            #TODO 승리 카드
+            pass
+        elif self.discard.cards[0].value == 'changeColor':
+            screen = pygame.display.set_mode(self.data['screenSize'])
+            self.runChangeColor = True
+            red = Button(self.data['screenSize'][0] // 5 - 50, self.data['screenSize'][1] // 2, 100, 35, 'red', self.screen, self.red)
+            blue = Button(self.data['screenSize'][0] // 5 * 2 - 50, self.data['screenSize'][1] // 2, 100, 35, 'blue', self.screen, self.blue)
+            green = Button(self.data['screenSize'][0] // 5 * 3 - 50, self.data['screenSize'][1] // 2, 100, 35, 'green', self.screen, self.green)
+            yellow = Button(self.data['screenSize'][0] // 5 * 4 - 50, self.data['screenSize'][1] // 2, 100, 35, 'yellow', self.screen, self.yellow)
+            while self.runChangeColor:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        self.running = False
+                
+                self.screen.fill([255, 255, 255])
+                red.process()
+                blue.process()
+                green.process()
+                yellow.process()
+                pygame.display.flip()
+            self.endTurn()
+
+        else:
+            self.endTurn()
+            print('기술 안나감')
+    
+    def red(self):
+        self.runChangeColor = False
+        self.changeColor = 'red'
+
+    def blue(self):
+        self.runChangeColor = False
+        self.changeColor = 'blue'
+
+    def green(self):
+        self.runChangeColor = False
+        self.changeColor = 'green'
+
+    def yellow(self):
+        self.runChangeColor = False
+        self.changeColor = 'yellow'
 
     def showSetting(self):
         settingMenu = SettingScreen()
@@ -385,7 +582,16 @@ class SingleGameScreen(Screen):
         self.data = self.setting.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         self.unoButton = Button(10, self.data['screenSize'][1] - 50, 100, 35, 'UNO', self.screen)
-        self.drawCardButton = Button(self.data['screenSize'][0] // 4 - 80, self.data['screenSize'][1] // 3,60, 35, 'add', self.screen)
+        self.drawCardButton = Button(self.data['screenSize'][0] // 4 - 80, self.data['screenSize'][1] // 3,60, 35, 'add', self.screen, self.drawCard)
+
+    def uno(self):
+        if isinstance(self.nowTurnPlayer, HumanPlayer):
+            if len(self.nowTurnPlayer.handsOnCard) == 2:
+                self.nowTurnPlayer.checkUno = True
+            else:
+                self.nowTurnPlayer.addCard(self.deck.drawCard())
+        elif isinstance(self.nowTurnPlayer, ComputerPlayer):
+            pass
 
     def run(self):
 
@@ -395,15 +601,20 @@ class SingleGameScreen(Screen):
 
         #게임 시작시 실행되는 내용
         font = pygame.font.SysFont('Arial', 25)
+        winFont = pygame.font.SysFont('Arial', 60)
         self.deck.createDeck()
-        self.player.handsOnCard = self.player.handsOnCard + self.deck.prepareCard()
+        self.player.handsOnCard = self.player.handsOnCard + [AbilityCard('None', 'joker', self.screen)] #self.deck.prepareCard()
         self.deck.shuffle()
-        nowTurnList = self.computerList + [self.player]
-        random.shuffle(nowTurnList)#시작 플레이어 설정
+        self.nowTurnList = self.computerList + [self.player]
         self.discard.addCard(self.deck.drawCard())
+        if isinstance(self.discard.cards[0], AbilityCard):
+            self.ability(self.discard.cards[0])
 
-        self.nowTurnPlayer = nowTurnList[self.index % len(nowTurnList)]
+        self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
+        self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time
+        self.humanStartTime = pygame.time.get_ticks()
 
+        clock = pygame.time.Clock()
 
         for i in range(len(self.computerList)):#카드 분배
             self.computerList[i].handsOnCard = self.computerList[i].handsOnCard + self.deck.prepareCard()
@@ -411,12 +622,25 @@ class SingleGameScreen(Screen):
 
         self.running = True
         while self.running:
-            self.nowTurnPlayer = nowTurnList[self.index % len(nowTurnList)]
-            nowTurnText = font.render('now turn : ' + self.nowTurnPlayer.name, True, (255, 255, 255))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     self.running = False
+
+                elif event.type == pygame.MOUSEBUTTONDOWN and isinstance(self.nowTurnPlayer, HumanPlayer):
+                    for i in range(len(self.nowTurnPlayer.handsOnCard)):
+                        if self.nowTurnPlayer.handsOnCard[i].canInsert and self.nowTurnPlayer.handsOnCard[i].isClicked(pygame.mouse.get_pos()):
+                            self.nowTurnPlayer.pushCard(i, self.discard)
+                            if isinstance(self.discard.cards[0], AbilityCard):
+                                if self.nowTurnPlayer.checkUno == False and len(self.nowTurnPlayer.handsOnCard) == 1:
+                                    self.nowTurnPlayer.addCard(self.deck.drawCard())
+                                self.ability(self.discard.cards[0].value)
+                            else:
+                                if self.nowTurnPlayer.checkUno == False and len(self.nowTurnPlayer.handsOnCard) == 1:
+                                    self.nowTurnPlayer.addCard(self.deck.drawCard())
+                                self.endTurn()
+                            self.nowTurnPlayer.checkUno = False
+                            break
                 
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -424,42 +648,89 @@ class SingleGameScreen(Screen):
                             isInputEsc = False
                         else:
                             isInputEsc = True
-                
-            if isInputEsc:
+
+            if self.haveWiner:
+                text = ''
+                quitButton = Button(self.data['screenSize'][0] // 2 - 50, self.data['screenSize'][1] // 3 * 2, 100, 35, 'quit', self.screen, self.quitScreen)
+                self.screen.fill([255, 255, 255])
+                for p in self.nowTurnList:
+                    if len(p.handsOnCard) == 0:
+                        text = p.name
+                winText = winFont.render('winder : ' + text, True, (0, 0, 0))
+                self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 150, self.data['screenSize'][1] // 3))
+                quitButton.process()
+                pygame.display.flip()
+
+            elif isInputEsc:
                 self.screen.fill([255, 255, 255])
 
                 for btn in self.escButtons:
                     btn.process()
 
                 #TODO 이 상태에선 타이머는 멈춰 있어야 함
+                pygame.display.flip()
 
             else:
+                #현제 턴 표시
+                self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
+                nowTurnText = font.render('now turn : ' + self.nowTurnPlayer.name , True, (255, 255, 255))
+                nextTurnText = font.render('next turn : ' + self.nowTurnList[(self.index + self.turnNum) % len(self.nowTurnList)].name, True, (255, 255, 255))
+
                 self.screen.fill(self.data['backgroundColor'])
                 self.screen.blit(nowTurnText, (self.data['screenSize'][0] // 2 - 100, 2))
+                self.screen.blit(nextTurnText, (self.data['screenSize'][0] // 2 - 100, 30))
 
                 # 영역 별 컬러
                 pygame.draw.rect(self.screen, handsOnColor, [0, (self.data['screenSize'][1] // 3) * 2, self.data['screenSize'][0], self.data['screenSize'][1]])
                 pygame.draw.rect(self.screen, listColor, [(self.data['screenSize'][0] // 4) * 3, 0, self.data['screenSize'][0], self.data['screenSize'][1]])
 
                 #카드들 출력
-                self.player.showHandsOnCard(self.data['screenSize'][0] // 6, self.data['screenSize'][1] // 10 * 7)
+                self.player.showHandsOnCard(50, self.data['screenSize'][1] // 10 * 7)
 
                 self.deck.show(self.data['screenSize'][0] // 4, self.data['screenSize'][1] // 3)
 
-                self.discard.show(self.data['screenSize'][0] // 4 * 2 - 50, self.data['screenSize'][1] // 3, self.screen)
+                self.discard.show(self.data['screenSize'][0] // 4 * 2 - 50, self.data['screenSize'][1] // 3, self.changeColor, self.screen)
 
                 #컴퓨터 카드 출력
                 for i in range(len(self.computerList)):
                     self.computerList[i].showHandsOnCard(self.data['screenSize'][0] // 4 * 3 + 50, self.data['screenSize'][1] // 5 * i, self.screen)
 
-                # 버튼 출력
+                #버튼 출력
                 self.unoButton.process()
-                self.drawCardButton.process()
+                
+                for p in self.nowTurnList:
+                    if len(p.handsOnCard) == 0:
+                        self.haveWiner = True
 
-            pygame.display.flip()
+                #컴퓨터의 턴
+                if isinstance(self.nowTurnPlayer, ComputerPlayer):
+                    if pygame.time.get_ticks() - self.comTurnTime > 800:
+                        if self.nowTurnPlayer.playTurn(self.discard, self.changeColor):
+                            if isinstance(self.discard.cards[0], AbilityCard):
+                                self.ability(self.discard.cards[0].value)
+                            else:
+                                self.endTurn()
+                        else:
+                            self.drawCard()
+
+                elif isinstance(self.nowTurnPlayer, HumanPlayer):#플레이어의 턴
+                    #내 턴 일때 출력
+                    self.nowTurnPlayer.checkCandInsert(self.discard, self.changeColor)
+                    elapsedTime = (pygame.time.get_ticks() - self.humanStartTime) / 1000
+                    timer = font.render('time : ' + str(int(self.nowTurnPlayer.totalTime - elapsedTime)), True, (255, 255, 255))
+                    self.screen.blit(timer,(10, 10))
+
+                    if self.nowTurnPlayer.totalTime - elapsedTime <= 0:#타임 오버
+                        self.drawCard()
+
+                    self.drawCardButton.process()
+
+                pygame.display.flip()
+                    
+
 
 
 if __name__ == '__main__':
     pygame.init()
-    setting = SingleGameScreen('player', [ComputerPlayer('computer1')])
+    setting = SingleGameScreen('player', [ComputerPlayer('computer1'), ComputerPlayer('computer2'), ComputerPlayer('computer3')])
     setting.run()
