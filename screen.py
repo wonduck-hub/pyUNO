@@ -45,6 +45,18 @@ class MapScreen(Screen):
         self.area2Rect = self.area2.get_rect(topleft = self.areas[1])
         self.area3Rect = self.area3.get_rect(topleft = self.areas[2])
         self.area4Rect = self.area4.get_rect(topleft = self.areas[3])
+
+        self.stageAButton = Button(100, 5, 40, 40, 'A', self.screen, self.showStageA)
+        self.stageBButton = Button(450, 50, 40, 40, 'B', self.screen, self.showStageB)
+        self.stageCButton = Button(100, 200, 40, 40, 'C', self.screen, self.showStageC)
+        self.stageDButton = Button(450, 250, 40, 40, 'D', self.screen, self.showStageD)
+
+        self.buttons = []
+
+        self.buttons.append(self.stageAButton)
+        self.buttons.append(self.stageBButton)
+        self.buttons.append(self.stageCButton)
+        self.buttons.append(self.stageDButton)
       
         # 각 단계 잠금 상태 초기화
         self.unlockArea1 = True
@@ -54,6 +66,34 @@ class MapScreen(Screen):
 
         self.quitButton = Button(15, 15, 60, 40, "quit", self.screen, self.quit)
     
+    #TODO 스테이지별 ComputerPlayer를 상속받는 객체 만들고 수정
+    def showStageA(self):
+        computerList = []
+        for i in range(0, 1):
+            computerList.append(ComputerPlayer('computer' + str(i + 1)))
+        SingleGameScreen('player', computerList).run()
+        self.data = self.setting.read()
+        self.running = False
+    
+    def showStageB(self):
+        computerList = []
+        for i in range(0, 3):
+            computerList.append(ComputerPlayer('computer' + str(i + 1)))
+        SingleGameScreen('player', computerList).run()
+        self.data = self.setting.read()
+        self.running = False
+
+    def showStageC(self):
+        computerList = []
+        for i in range(0, 2):
+            computerList.append(ComputerPlayer('computer' + str(i + 1)))
+        SingleGameScreen('player', computerList).run()
+        self.data = self.setting.read()
+        self.running = False
+
+    def showStageD(self):
+        pass
+
     def quit(self):
         self.running = False
 
@@ -109,17 +149,20 @@ class MapScreen(Screen):
                 # 마우스 클릭으로 지역 선택
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mousePos = pygame.mouse.get_pos()
-                    if self.area1Rect.collidepoint(mousePos):
-                        self.askStart(1)
+                    #if self.area1Rect.collidepoint(mousePos):
+                        #self.askStart(1)
                         
-                    elif self.area2Rect.collidepoint(mousePos):    
-                        self.askStart(2)
+                    #elif self.area2Rect.collidepoint(mousePos):    
+                        #self.askStart(2)
                         
-                    elif self.area3Rect.collidepoint(mousePos):
-                        self.askStart(3)
+                    #elif self.area3Rect.collidepoint(mousePos):
+                        #self.askStart(3)
                         
-                    elif self.area4Rect.collidepoint(mousePos):  
-                        self.askStart(4)
+                    #elif self.area4Rect.collidepoint(mousePos):  
+                        #self.askStart(4)
+            
+            for btn in self.buttons:
+                btn.process()
             
             self.quitButton.process()
                 
