@@ -24,9 +24,9 @@ class MapScreen(Screen):
         # self.setting = settingManager()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
-        self.screen = pygame.display.set_mode(self.data['screenSize'])
+        #self.screen = pygame.display.set_mode(self.data['screenSize'])
       
-        self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), (self.width, self.height))
+        self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), (self.data['screenSize'][0], self.data['screenSize'][1]))
         self.area1 = pygame.image.load("map_image/area_1.png")
         self.area2 = pygame.image.load("map_image/area_2.png")
         self.area3 = pygame.image.load("map_image/area_3.png")
@@ -674,7 +674,10 @@ class SingleGameScreen(Screen):
             else:
                 self.nowTurnPlayer.addCard(self.deck.drawCard())
         elif isinstance(self.nowTurnPlayer, ComputerPlayer):
-            pass
+            if len(self.nowTurnPlayer.handsOnCard) == 2:
+                self.nowTurnPlayer.checkUno = True
+            else:
+                self.nowTurnList[0].addCard(self.deck.drawCard())
 
     def run(self):
 
@@ -688,7 +691,7 @@ class SingleGameScreen(Screen):
         self.deck.createDeck()
         self.player.handsOnCard = self.player.handsOnCard + self.deck.prepareCard()
         self.deck.shuffle()
-        self.nowTurnList = self.computerList + [self.player]
+        self.nowTurnList = [self.player] + self.computerList 
         self.discard.addCard(self.deck.drawCard())
         if isinstance(self.discard.cards[0], AbilityCard):
             self.ability(self.discard.cards[0])
@@ -796,12 +799,20 @@ class SingleGameScreen(Screen):
                 if isinstance(self.nowTurnPlayer, ComputerPlayer):
                     if pygame.time.get_ticks() - self.comTurnTime > 800:
                         if self.nowTurnPlayer.playTurn(self.discard, self.changeColor):
-                            if isinstance(self.discard.cards[0], AbilityCard):
-                                self.ability(self.discard.cards[0].value)
+                            if self.nowTurnPlayer.checkUno == True and len(self.nowTurnPlayer.handsOnCard) == 1:
+                                if isinstance(self.discard.cards[0], AbilityCard):
+                                        self.ability(self.discard.cards[0].value)
+                                else:
+                                    self.endTurn()
+                                self.drawCard()
                             else:
-                                self.endTurn()
+                                if isinstance(self.discard.cards[0], AbilityCard):
+                                        self.ability(self.discard.cards[0].value)
+                                else:
+                                    self.endTurn()
                         else:
                             self.drawCard()
+                        self.nowTurnPlayer.checkUno = False
 
                 elif isinstance(self.nowTurnPlayer, HumanPlayer):#플레이어의 턴
                     #내 턴 일때 출력
@@ -822,5 +833,5 @@ class SingleGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
-    setting = SingleGameScreen('player', [ComputerPlayer('computer1')])
+    setting = MapScreen()
     setting.run()

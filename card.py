@@ -131,7 +131,10 @@ class Deck:
       random.shuffle(self.cards)
 
     def drawCard(self): # 카드덱에서 카드 뽑아냄 (player)
-        card = self.cards.pop(0)
+        if self.cards == []:
+            card = []
+        else:
+            card = self.cards.pop(0)
         return card
 
     def addCard(self, card): # 인자로 받은 card를 cards 리스트에 추가
