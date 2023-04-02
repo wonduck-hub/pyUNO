@@ -46,10 +46,10 @@ class MapScreen(Screen):
         self.area3Rect = self.area3.get_rect(topleft = self.areas[2])
         self.area4Rect = self.area4.get_rect(topleft = self.areas[3])
 
-        self.stageAButton = Button(100, 5, 40, 40, 'A', self.screen, self.showStageA)
-        self.stageBButton = Button(450, 50, 40, 40, 'B', self.screen, self.showStageB)
-        self.stageCButton = Button(100, 200, 40, 40, 'C', self.screen, self.showStageC)
-        self.stageDButton = Button(450, 250, 40, 40, 'D', self.screen, self.showStageD)
+        self.stageAButton = Button(100, 5, 50, 40, 'A', self.screen, self.showStageA)
+        self.stageBButton = Button(450, 50, 50, 40, 'B', self.screen, self.showStageB)
+        self.stageCButton = Button(100, 200, 50, 40, 'C', self.screen, self.showStageC)
+        self.stageDButton = Button(450, 250, 50, 40, 'D', self.screen, self.showStageD)
 
         self.buttons = []
 
@@ -57,12 +57,9 @@ class MapScreen(Screen):
         self.buttons.append(self.stageBButton)
         self.buttons.append(self.stageCButton)
         self.buttons.append(self.stageDButton)
-      
-        # 각 단계 잠금 상태 초기화
-        self.unlockArea1 = True
-        self.unlockArea2 = False
-        self.unlockArea3 = False
-        self.unlockArea4 = False
+
+        self.smallFont = pygame.font.SysFont('Arial', 18)
+        self.textSelect = self.smallFont.render("[v]", True, (0, 0, 100))
 
         self.quitButton = Button(15, 15, 60, 40, "quit", self.screen, self.quit)
     
@@ -136,15 +133,33 @@ class MapScreen(Screen):
     
     def run(self):
   
-        map = MapScreen()
-        map.draw()
+        self.draw()
         
+        temp = 0
+        buttonIndex = 0
+        selectPos = (self.buttons[buttonIndex].getX(), self.buttons[buttonIndex].getY())
+
         self.running = True
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     self.running = False
+                
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN or event.key == pygame.K_RIGHT: #화살표 아래, 오른쪽 버튼을 눌렀을 때
+                        temp = temp + 1
+                        buttonIndex = temp % len(self.buttons)
+                        selectPos = (self.buttons[buttonIndex].getX(), self.buttons[buttonIndex].getY())
+
+
+                    elif event.key == pygame.K_UP or event.key == pygame.K_LEFT: #화살표 위, 왼쪽 버튼을 눌렀을 떄
+                        temp = temp - 1
+                        buttonIndex = temp % len(self.buttons)
+                        selectPos = (self.buttons[buttonIndex].getX(), self.buttons[buttonIndex].getY())
+
+                    elif event.key == pygame.K_RETURN:
+                        self.buttons[buttonIndex].runFunction()
                 
                 # 마우스 클릭으로 지역 선택
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -163,6 +178,8 @@ class MapScreen(Screen):
             
             for btn in self.buttons:
                 btn.process()
+            
+            self.screen.blit(self.textSelect, selectPos)
             
             self.quitButton.process()
                 

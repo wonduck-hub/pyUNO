@@ -26,6 +26,11 @@ class Button():
     def getPos(self):
         return (self.x, self.y)
     
+    def getX(self):
+        return self.x
+    
+    def getY(self):
+        return self.y
 
     def setOnClickFunction(self, onClickFunction):
         self.__onClickFunction = onClickFunction
