@@ -736,11 +736,16 @@ class SingleGameScreen(Screen):
                 text = ''
                 quitButton = Button(self.data['screenSize'][0] // 2 - 50, self.data['screenSize'][1] // 3 * 2, 100, 35, 'quit', self.screen, self.quitScreen)
                 self.screen.fill([255, 255, 255])
-                for p in self.nowTurnList:
-                    if len(p.handsOnCard) == 0:
-                        text = p.name
-                winText = winFont.render('winder : ' + text, True, (0, 0, 0))
-                self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 150, self.data['screenSize'][1] // 3))
+                if(len(self.deck.cards) == 0):
+                    text = 'The game ended in a tie'
+                    winText = winFont.render(text, True, (0, 0, 0))
+                    self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 300, self.data['screenSize'][1] // 3))
+                else:
+                    for p in self.nowTurnList:
+                        if len(p.handsOnCard) == 0:
+                            text = 'winer : ' + p.name
+                    winText = winFont.render(text, True, (0, 0, 0))
+                    self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 150, self.data['screenSize'][1] // 3))
                 quitButton.process()
                 pygame.display.flip()
 
@@ -781,7 +786,10 @@ class SingleGameScreen(Screen):
                 self.unoButton.process()
                 
                 for p in self.nowTurnList:
-                    if len(p.handsOnCard) == 0:
+                    if len(p.handsOnCard) <= 0:
+                        self.haveWiner = True
+                
+                if len(self.deck.cards) <= 0:
                         self.haveWiner = True
 
                 #컴퓨터의 턴
@@ -814,5 +822,5 @@ class SingleGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
-    setting = SingleGameScreen('player', [ComputerPlayer('computer1'), ComputerPlayer('computer2'), ComputerPlayer('computer3')])
+    setting = SingleGameScreen('player', [ComputerPlayer('computer1')])
     setting.run()

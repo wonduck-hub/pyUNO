@@ -61,7 +61,7 @@ class Deck:
 
     def __init__(self, screen):
         self.colors = ["red", "yellow", "green", "blue"]
-        self.cards = [] # 카드 덱
+        self.cards = []
         self.selectedCard = None
         self.screen = screen
         self.data = SettingManager()
