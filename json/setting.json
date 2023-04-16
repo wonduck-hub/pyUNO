@@ -5,8 +5,8 @@
         0
     ],
     "screenSize": [
-        750,
-        500
+        700,
+        450
     ],
     "keyControl": [
         "up",
@@ -14,5 +14,11 @@
         "left",
         "right",
         "return"
+    ],
+    "stageClear": [
+        "T",
+        "F",
+        "F",
+        "F"
     ]
 }

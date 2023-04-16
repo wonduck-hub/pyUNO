@@ -147,24 +147,28 @@ class MapScreen(Screen):
 
         self.running = True
         while self.running:
+            showButtonCount = 0
+            for i in self.data['stageClear']:
+                if i == 'T':
+                    showButtonCount += 1
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     self.running = False
                 
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_DOWN or event.key == pygame.K_RIGHT: #화살표 아래, 오른쪽 버튼을 눌렀을 때
+                    if pygame.key.name(event.key) == self.data['keyControl'][1] or pygame.key.name(event.key) == self.data['keyControl'][3]: #화살표 아래, 오른쪽 버튼을 눌렀을 때
                         temp = temp + 1
-                        buttonIndex = temp % len(self.buttons)
+                        buttonIndex = temp % showButtonCount
                         selectPos = (self.buttons[buttonIndex].getX(), self.buttons[buttonIndex].getY())
 
 
-                    elif event.key == pygame.K_UP or event.key == pygame.K_LEFT: #화살표 위, 왼쪽 버튼을 눌렀을 떄
+                    elif pygame.key.name(event.key) == self.data['keyControl'][0] or pygame.key.name(event.key) == self.data['keyControl'][2]: #화살표 위, 왼쪽 버튼을 눌렀을 떄
                         temp = temp - 1
-                        buttonIndex = temp % len(self.buttons)
+                        buttonIndex = temp % showButtonCount
                         selectPos = (self.buttons[buttonIndex].getX(), self.buttons[buttonIndex].getY())
 
-                    elif event.key == pygame.K_RETURN:
+                    elif pygame.key.name(event.key) == self.data['keyControl'][4]:
                         self.buttons[buttonIndex].runFunction()
                 
                 # 마우스 클릭으로 지역 선택
@@ -182,8 +186,11 @@ class MapScreen(Screen):
                     #elif self.area4Rect.collidepoint(mousePos):  
                         #self.askStart(4)
             
-            for btn in self.buttons:
-                btn.process()
+            i = 0
+            for c in self.data['stageClear']:
+                if c == 'T':
+                    self.buttons[i].process()
+                i += 1
             
             self.screen.blit(self.textSelect, selectPos)
             
@@ -219,12 +226,12 @@ class StartScreen(Screen):
 
         self.buttons = []
         self.startButton = Button(30, 210, 140, 40, "single",self.screen)
-        self.menuButton = Button(30, 280, 140, 40, "menu", self.screen)
+        self.settingButton = Button(30, 280, 140, 40, "setting", self.screen)
         self.quitButton = Button(30, 350, 140, 40, "quit", self.screen, pygame.quit)
         self.storyButton = Button(190, 210, 140, 40, "story", self.screen)
 
         self.buttons.append(self.startButton)
-        self.buttons.append(self.menuButton)
+        self.buttons.append(self.settingButton)
         self.buttons.append(self.quitButton)
         self.buttons.append(self.storyButton)
 
@@ -244,7 +251,7 @@ class StartScreen(Screen):
     
     def run(self):
 
-        self.menuButton.setOnClickFunction(self.showSetting)
+        self.settingButton.setOnClickFunction(self.showSetting)
         self.startButton.setOnClickFunction(self.showInGame)
         self.storyButton.setOnClickFunction(self.showMap)
 
@@ -259,18 +266,18 @@ class StartScreen(Screen):
                 if event.type == pygame.QUIT:
                     self.running = False
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_DOWN or event.key == pygame.K_RIGHT: #화살표 아래, 오른쪽 버튼을 눌렀을 때
+                    if pygame.key.name(event.key) == self.data['keyControl'][1] or pygame.key.name(event.key) == self.data['keyControl'][3]: #화살표 아래, 오른쪽 버튼을 눌렀을 때
                         temp = temp + 1
                         buttonIndex = temp % len(self.buttons)
                         selectPos = self.buttons[buttonIndex].getPos()
 
 
-                    elif event.key == pygame.K_UP or event.key == pygame.K_LEFT: #화살표 위, 왼쪽 버튼을 눌렀을 떄
+                    elif pygame.key.name(event.key) == self.data['keyControl'][0] or pygame.key.name(event.key) == self.data['keyControl'][2]: #화살표 위, 왼쪽 버튼을 눌렀을 떄
                         temp = temp - 1
                         buttonIndex = temp % len(self.buttons)
                         selectPos = self.buttons[buttonIndex].getPos()
 
-                    elif event.key == pygame.K_RETURN:
+                    elif pygame.key.name(event.key) == self.data['keyControl'][4]:
                         self.buttons[buttonIndex].runFunction()
 
                     else:
@@ -419,7 +426,7 @@ class SettingScreen(Screen):
                 if event.type == pygame.KEYDOWN and self.clicked:
                         newKey = pygame.key.name(event.key)
                         self.data['keyControl'][number] =  newKey
-                        self.setting.write(self.data)
+                        #self.setting.write(self.data)
                         if number==0:
                             keyUpText = font.render(newKey, True, (128, 128, 128))
                             self.clicked=False
@@ -631,6 +638,11 @@ class SingleGameScreen(Screen):
         self.haveWinner = False
         self.winner = None
         self.stageCCount = 1
+        self.smallFont = pygame.font.SysFont('Arial', 18)
+        self.textSelect = self.smallFont.render("[●]", True, (0, 0, 100))
+        self.tap = []
+        self.tapX = 0
+        self.tapY = 0
 
         self.setting = SettingManager()
         self.width = self.screen.get_width()
@@ -656,6 +668,12 @@ class SingleGameScreen(Screen):
         self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time
         self.humanStartTime = pygame.time.get_ticks()
         self.deck.addCard(self.discard)
+
+        #내 선택
+        self.tap[0] = [self.drawCardButton]
+        self.tap[1] = self.nowTurnPlayer.handsOnCard
+        self.tap[2] = [self.unoButton]
+
 
         if self.stage == 'c':
             self.stageCCount += 1
@@ -831,6 +849,13 @@ class SingleGameScreen(Screen):
         self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
         self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time
         self.humanStartTime = pygame.time.get_ticks()
+        
+        self.tap.append([self.drawCardButton])
+        self.tap.append(self.nowTurnPlayer.handsOnCard)
+        self.tap.append([self.unoButton])
+        selectPos = (self.tap[self.tapY][self.tapX].getX(), self.tap[self.tapY][self.tapX].getY())
+        temp1 = 0
+        temp2 = 0
 
         clock = pygame.time.Clock()
 
@@ -870,8 +895,54 @@ class SingleGameScreen(Screen):
                             isInputEsc = False
                         else:
                             isInputEsc = True
+                    if pygame.key.name(event.key) == self.data['keyControl'][1]:
+                        temp1 += 1
+                        self.tapX = 0
+                        temp2 = 0
+                        self.tapY = temp1 % 3
+                        selectPos = (self.tap[self.tapY][self.tapX].getX(), self.tap[self.tapY][self.tapX].getY())
+                    elif pygame.key.name(event.key) == self.data['keyControl'][3]: #화살표 아래, 오른쪽 버튼을 눌렀을 때
+                        temp2 += 1
+                        self.tapX = temp2 % len(self.tap[self.tapY])
+                        selectPos = (self.tap[self.tapY][self.tapX].getX(), self.tap[self.tapY][self.tapX].getY())
+                    elif pygame.key.name(event.key) == self.data['keyControl'][0]:
+                        temp1 -= 1
+                        self.tapX = 0
+                        temp2 = 0
+                        self.tapY = temp1 % 3
+                        selectPos = (self.tap[self.tapY][self.tapX].getX(), self.tap[self.tapY][self.tapX].getY())
+                    elif pygame.key.name(event.key) == self.data['keyControl'][2]: #화살표 위, 왼쪽 버튼을 눌렀을 떄
+                        temp2 -= 1
+                        self.tapX = temp2 % len(self.tap[self.tapY])
+                        selectPos = (self.tap[self.tapY][self.tapX].getX(), self.tap[self.tapY][self.tapX].getY())
+                    elif pygame.key.name(event.key) == self.data['keyControl'][4]:
+                        if self.tapY == 0:
+                            self.drawCard()
+                        elif self.tapY == 2:
+                            self.unoButton()
+                        elif self.tapY == 1:
+                            if self.nowTurnPlayer.handsOnCard[self.tapX].canInsert:
+                                self.nowTurnPlayer.pushCard(self.tapX, self.discard)
+                                if isinstance(self.discard.cards[0], AbilityCard):
+                                    if self.nowTurnPlayer.checkUno == False and len(self.nowTurnPlayer.handsOnCard) == 1:
+                                        self.nowTurnPlayer.addCard(self.deck.drawCard())
+                                    self.ability(self.discard.cards[0].value)
+                                else:
+                                    if self.nowTurnPlayer.checkUno == False and len(self.nowTurnPlayer.handsOnCard) == 1:
+                                        self.nowTurnPlayer.addCard(self.deck.drawCard())
+                                    self.endTurn()
+                                self.nowTurnPlayer.checkUno = False
+
 
             if self.haveWinner:
+
+                if isinstance(self.winner, HumanPlayer) and self.stage == 'a':
+                    self.data['stageClear'][1] = 'T'
+                if isinstance(self.winner, HumanPlayer) and self.stage == 'b':
+                    self.data['stageClear'][2] = 'T'
+                if isinstance(self.winner, HumanPlayer) and self.stage == 'c':
+                    self.data['stageClear'][3] = 'T'
+
                 text = ''
                 quitButton = Button(self.data['screenSize'][0] // 2 - 50, self.data['screenSize'][1] // 3 * 2, 100, 35, 'quit', self.screen, self.quitScreen)
                 self.screen.fill([255, 255, 255])
@@ -916,6 +987,7 @@ class SingleGameScreen(Screen):
                 self.deck.show(self.data['screenSize'][0] // 4, self.data['screenSize'][1] // 3)
 
                 self.discard.show(self.data['screenSize'][0] // 4 * 2 - 50, self.data['screenSize'][1] // 3, self.changeColor, self.screen)
+                
 
                 #컴퓨터 카드 출력
                 for i in range(len(self.computerList)):
@@ -953,8 +1025,10 @@ class SingleGameScreen(Screen):
 
 
                 elif isinstance(self.nowTurnPlayer, HumanPlayer):#플레이어의 턴
+                    
+                    self.nowTurnPlayer.checkCanInsert(self.discard, self.changeColor)
+
                     #내 턴 일때 출력
-                    self.nowTurnPlayer.checkCandInsert(self.discard, self.changeColor)
                     elapsedTime = (pygame.time.get_ticks() - self.humanStartTime) / 1000
                     timer = font.render('time : ' + str(int(self.nowTurnPlayer.totalTime - elapsedTime)), True, (255, 255, 255))
                     self.screen.blit(timer,(10, 10))
@@ -963,6 +1037,7 @@ class SingleGameScreen(Screen):
                         self.drawCard()
 
                     self.drawCardButton.process()
+                    self.screen.blit(self.textSelect, selectPos)
                 
 
                 pygame.display.flip()

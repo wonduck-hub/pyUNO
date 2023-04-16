@@ -28,6 +28,12 @@ class Card:
         self.imagePath = f"./card_image/{color}_{value}.png"
         self.image = pygame.transform.scale(pygame.image.load(self.imagePath), (self.width, self.height))
         self.rect = self.image.get_rect() # 카드의 사각형 영역
+
+    def getX(self):
+        return self.x
+    
+    def getY(self):
+        return self.y
         
     def show(self, x, y): # 위치 정보 인자로 받아 카드 그리기
         self.x = x
