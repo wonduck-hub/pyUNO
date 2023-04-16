@@ -375,6 +375,12 @@ class SettingScreen(Screen):
     def resetData(self):
         #나중에 추가 필요
         self.data['screenSize'] = [700, 450]
+        self.data['keyControl'][0] = 'up'
+        self.data['keyControl'][1] = 'down'
+        self.data['keyControl'][2] = 'left'
+        self.data['keyControl'][3] = 'right'
+        self.data['keyControl'][4] = 'return'
+        self.data['colorBlindness'] = 'off'
         self.setting.write(self.data)
 
     def run(self):
