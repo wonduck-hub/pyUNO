@@ -29,6 +29,10 @@ class DiscardPile:
         else:
             nowColor = self.font.render(changeColor, True, (255, 255, 255))
             screen.blit(nowColor, (x + 60, y))
+        
+    def sendCard(self):
+        return self.cards.pop()
+
 
 
 # 플레이어 클래스
@@ -107,6 +111,9 @@ class ComputerPlayer(Player):
     def __init__(self, name):
         super().__init__(name)
         self.font = pygame.font.Font(None, 20)
+    
+    def dealCards(self, deck):
+        self.handsOnCard += deck.prepareCard()
 
     def showHandsOnCard(self, x, y, screen):
         name = self.font.render(self.name, True, (128, 128, 128))
@@ -136,8 +143,13 @@ class ComputerPlayer(Player):
         else:
             return False
 
-        
+class ComputerPlayerA(ComputerPlayer): 
+    def __init__(self, name):
+        super().__init__(name)
 
+    #def dealCards(self, deck):
+    #    #TODO 나중에 150%로 기술카드 뽑기 구현
+    #    pass
 
 
 if __name__ == '__main__':

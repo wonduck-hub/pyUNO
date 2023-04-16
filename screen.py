@@ -8,6 +8,7 @@ from card import NumberCard, Deck, AbilityCard
 from player import HumanPlayer
 from player import ComputerPlayer
 from player import DiscardPile
+from player import ComputerPlayerA
 
 class Screen:
     def __init__(self):
@@ -67,8 +68,8 @@ class MapScreen(Screen):
     def showStageA(self):
         computerList = []
         for i in range(0, 1):
-            computerList.append(ComputerPlayer('computer' + str(i + 1)))
-        SingleGameScreen('player', computerList).run()
+            computerList.append(ComputerPlayerA('computer' + str(i + 1)))
+        SingleGameScreen('player', computerList, 'a').run()
         self.data = self.setting.read()
         self.running = False
     
@@ -76,7 +77,7 @@ class MapScreen(Screen):
         computerList = []
         for i in range(0, 3):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
-        SingleGameScreen('player', computerList).run()
+        SingleGameScreen('player', computerList, 'b').run()
         self.data = self.setting.read()
         self.running = False
 
@@ -84,12 +85,17 @@ class MapScreen(Screen):
         computerList = []
         for i in range(0, 2):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
-        SingleGameScreen('player', computerList).run()
+        SingleGameScreen('player', computerList, 'c').run()
         self.data = self.setting.read()
         self.running = False
 
     def showStageD(self):
-        pass
+        computerList = []
+        for i in range(0, 1):
+            computerList.append(ComputerPlayer('computer' + str(i + 1)))
+        SingleGameScreen('player', computerList, 'd').run()
+        self.data = self.setting.read()
+        self.running = False
 
     def quit(self):
         self.running = False
@@ -605,8 +611,9 @@ class LobbyScreen(Screen):
 
 class SingleGameScreen(Screen):
     
-    def __init__(self, name, computerList):
+    def __init__(self, name, computerList, stage = None):
         super().__init__()
+        self.stage = stage
         self.playerName = name
         self.player = HumanPlayer(name)
         self.computerList  = []
@@ -621,7 +628,9 @@ class SingleGameScreen(Screen):
         self.nowTurnList = []
         self.runChangeColor = True
         self.changeColor = 'None'
-        self.haveWiner = False
+        self.haveWinner = False
+        self.winner = None
+        self.stageCCount = 1
 
         self.setting = SettingManager()
         self.width = self.screen.get_width()
@@ -646,8 +655,43 @@ class SingleGameScreen(Screen):
         self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
         self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time
         self.humanStartTime = pygame.time.get_ticks()
+        self.deck.addCard(self.discard)
+
+        if self.stage == 'c':
+            self.stageCCount += 1
+            if self.stageCCount % 5 == 0:
+                r = random.randint(1, 4)
+                if r == 1:
+                    if self.discard.cards[0].color != 'None':
+                        self.discard.cards[0].color = 'red'
+                    else:
+                        self.discard.cards[0].color = 'red'
+                        self.discard.cards[0].value = '0'
+                elif r == 2:
+                    if self.discard.cards[0].color != 'None':
+                        self.discard.cards[0].color = 'blue'
+                    else:
+                        self.discard.cards[0].color = 'blue'
+                        self.discard.cards[0].value = '0'
+                elif r == 3:
+                    if self.discard.cards[0].color != 'None':
+                        self.discard.cards[0].color = 'green'
+                    else:
+                        self.discard.cards[0].color = 'green'
+                        self.discard.cards[0].value = '0'
+                elif r == 4:
+                    if self.discard.cards[0].color != 'None':
+                        self.discard.cards[0].color = 'yellow'
+                    else:
+                        self.discard.cards[0].color = 'yellow'
+                        self.discard.cards[0].value = '0'
+
+
 
     def drawCard(self):
+        if self.stage == 'd':
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
+            self.nowTurnPlayer.addCard(self.deck.drawCard())
         self.nowTurnPlayer.addCard(self.deck.drawCard())
         self.endTurn()
             
@@ -677,27 +721,55 @@ class SingleGameScreen(Screen):
             self.nowTurnPlayer.addCard(self.deck.drawCard())
             self.nowTurnPlayer.addCard(self.deck.drawCard())
         elif self.discard.cards[0].value == 'defense':
-            self.nowTurnPlayer.handsOnCard = []
-        elif self.discard.cards[0].value == 'changeColor':
-            screen = pygame.display.set_mode(self.data['screenSize'])
-            self.runChangeColor = True
-            red = Button(self.data['screenSize'][0] // 5 - 50, self.data['screenSize'][1] // 2, 100, 35, 'red', self.screen, self.red)
-            blue = Button(self.data['screenSize'][0] // 5 * 2 - 50, self.data['screenSize'][1] // 2, 100, 35, 'blue', self.screen, self.blue)
-            green = Button(self.data['screenSize'][0] // 5 * 3 - 50, self.data['screenSize'][1] // 2, 100, 35, 'green', self.screen, self.green)
-            yellow = Button(self.data['screenSize'][0] // 5 * 4 - 50, self.data['screenSize'][1] // 2, 100, 35, 'yellow', self.screen, self.yellow)
-            while self.runChangeColor:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        self.running = False
-                
-                self.screen.fill([255, 255, 255])
-                red.process()
-                blue.process()
-                green.process()
-                yellow.process()
-                pygame.display.flip()
+            self.haveWinner = True
+            self.winner = self.nowTurnPlayer
             self.endTurn()
+        elif self.discard.cards[0].value == 'changeColor':
+            if isinstance(self.nowTurnPlayer, HumanPlayer):
+                self.runChangeColor = True
+                red = Button(self.data['screenSize'][0] // 5 - 50, self.data['screenSize'][1] // 2, 100, 35, 'red', self.screen, self.red)
+                blue = Button(self.data['screenSize'][0] // 5 * 2 - 50, self.data['screenSize'][1] // 2, 100, 35, 'blue', self.screen, self.blue)
+                green = Button(self.data['screenSize'][0] // 5 * 3 - 50, self.data['screenSize'][1] // 2, 100, 35, 'green', self.screen, self.green)
+                yellow = Button(self.data['screenSize'][0] // 5 * 4 - 50, self.data['screenSize'][1] // 2, 100, 35, 'yellow', self.screen, self.yellow)
+                while self.runChangeColor:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                            self.running = False
+                    
+                    self.screen.fill([255, 255, 255])
+                    red.process()
+                    blue.process()
+                    green.process()
+                    yellow.process()
+                    pygame.display.flip()
+                self.endTurn()
+            else:
+                r = random.randint(1, 4)
+                if r == 1:
+                    if self.discard.cards[0].color != 'None':
+                        self.discard.cards[0].color = 'red'
+                    else:
+                        self.discard.cards[0].color = 'red'
+                        self.discard.cards[0].value = '0'
+                elif r == 2:
+                    if self.discard.cards[0].color != 'None':
+                        self.discard.cards[0].color = 'blue'
+                    else:
+                        self.discard.cards[0].color = 'blue'
+                        self.discard.cards[0].value = '0'
+                elif r == 3:
+                    if self.discard.cards[0].color != 'None':
+                        self.discard.cards[0].color = 'green'
+                    else:
+                        self.discard.cards[0].color = 'green'
+                        self.discard.cards[0].value = '0'
+                elif r == 4:
+                    if self.discard.cards[0].color != 'None':
+                        self.discard.cards[0].color = 'yellow'
+                    else:
+                        self.discard.cards[0].color = 'yellow'
+                        self.discard.cards[0].value = '0'
 
         else:
             self.endTurn()
@@ -763,8 +835,12 @@ class SingleGameScreen(Screen):
         clock = pygame.time.Clock()
 
         for i in range(len(self.computerList)):#카드 분배
-            self.computerList[i].handsOnCard = self.computerList[i].handsOnCard + self.deck.prepareCard()
+            self.computerList[i].dealCards(self.deck)
 
+        if self.stage == 'b':
+            for i in range(2, len(self.deck.cards)):
+                self.nowTurnList[i % len(self.nowTurnList)].handsOnCard.append(self.deck.cards[i])
+                
 
         self.running = True
         while self.running:
@@ -795,20 +871,20 @@ class SingleGameScreen(Screen):
                         else:
                             isInputEsc = True
 
-            if self.haveWiner:
+            if self.haveWinner:
                 text = ''
                 quitButton = Button(self.data['screenSize'][0] // 2 - 50, self.data['screenSize'][1] // 3 * 2, 100, 35, 'quit', self.screen, self.quitScreen)
                 self.screen.fill([255, 255, 255])
-                if(len(self.deck.cards) == 0):
-                    text = 'The game ended in a tie'
-                    winText = winFont.render(text, True, (0, 0, 0))
-                    self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 300, self.data['screenSize'][1] // 3))
-                else:
-                    for p in self.nowTurnList:
-                        if len(p.handsOnCard) == 0:
-                            text = 'winer : ' + p.name
-                    winText = winFont.render(text, True, (0, 0, 0))
-                    self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 150, self.data['screenSize'][1] // 3))
+                #if(len(self.deck.cards) == 0):
+                #    text = 'The game ended in a tie'
+                #    winText = winFont.render(text, True, (0, 0, 0))
+                #    self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 300, self.data['screenSize'][1] // 3))
+                #else:
+                #for p in self.nowTurnList:
+                #    if len(p.handsOnCard) == 0:
+                text = 'winer : ' + self.winner.name
+                winText = winFont.render(text, True, (0, 0, 0))
+                self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 150, self.data['screenSize'][1] // 3))
                 quitButton.process()
                 pygame.display.flip()
 
@@ -850,10 +926,11 @@ class SingleGameScreen(Screen):
                 
                 for p in self.nowTurnList:
                     if len(p.handsOnCard) <= 0:
-                        self.haveWiner = True
+                        self.haveWinner = True
+                        self.winner = p
                 
-                if len(self.deck.cards) <= 0:
-                        self.haveWiner = True
+                #if len(self.deck.cards) <= 0:
+                #        self.haveWinner = True
 
                 #컴퓨터의 턴
                 if isinstance(self.nowTurnPlayer, ComputerPlayer):
@@ -874,6 +951,7 @@ class SingleGameScreen(Screen):
                             self.drawCard()
                         self.nowTurnPlayer.checkUno = False
 
+
                 elif isinstance(self.nowTurnPlayer, HumanPlayer):#플레이어의 턴
                     #내 턴 일때 출력
                     self.nowTurnPlayer.checkCandInsert(self.discard, self.changeColor)
@@ -885,6 +963,7 @@ class SingleGameScreen(Screen):
                         self.drawCard()
 
                     self.drawCardButton.process()
+                
 
                 pygame.display.flip()
                     
@@ -893,5 +972,5 @@ class SingleGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
-    setting = MapScreen()
-    setting.run()
+    a = SingleGameScreen('player', [ComputerPlayer('a')])
+    a.run()

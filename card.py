@@ -110,11 +110,13 @@ class Deck:
         self.cards.append(AbilityCard("blue", 'skip', self.screen))
 
         #none color
-        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        #self.cards.append(AbilityCard("None", 'defense', self.screen))
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'defense', self.screen))
+        self.cards.append(AbilityCard("None", 'joker', self.screen))
+        self.cards.append(AbilityCard("None", 'joker', self.screen))
         self.cards.append(AbilityCard("None", 'joker', self.screen))
         self.cards.append(AbilityCard("None", 'joker', self.screen))
 
@@ -137,8 +139,9 @@ class Deck:
             card = self.cards.pop(0)
         return card
 
-    def addCard(self, card): # 인자로 받은 card를 cards 리스트에 추가
-        self.cards.append(card)
+    def addCard(self, disCard): # 
+        if len(disCard.cards) >= 2:
+            self.cards.append(disCard.sendCard())
 
 if __name__ == '__main__':
     pygame.init()
