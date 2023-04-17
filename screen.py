@@ -371,12 +371,6 @@ class SettingScreen(Screen):
 
         self.clicked=False
     
-    def volumeUp(self):
-        pygame.mixer.music.set_volume(1)
-
-    def volumeDown(self):
-        pygame.mixer.music.set_volume(0)
-
     def smallScreen(self):
         self.data['screenSize'] = [650, 400]
 
