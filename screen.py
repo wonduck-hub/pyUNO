@@ -4,6 +4,7 @@ import sys
 import time
 from utils.saveManager import SettingManager
 from utils.button import Button
+from utils.sound import sound
 from card import NumberCard, Deck, AbilityCard
 from player import HumanPlayer
 from player import ComputerPlayer
@@ -17,6 +18,8 @@ class Screen:
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         pygame.display.set_caption('PyUNO')
         self.running = True
+        #self.sound = SoundManager()
+
         
 
 class MapScreen(Screen):
@@ -240,14 +243,17 @@ class StartScreen(Screen):
         settingMenu.run()
         self.data = self.setting.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
+        sound.playBackground1()
     
     def showInGame(self):
         inGame = LobbyScreen()
         inGame.run()
+        sound.playBackground1()
     
     def showMap(self):
         map = MapScreen()
         map.run()
+        sound.playBackground1()
     
     def run(self):
 
@@ -259,6 +265,9 @@ class StartScreen(Screen):
         buttonIndex = 0
         selectPos = self.buttons[0].getPos()
         isShowHelp = False
+
+        #self.sound.playBackground1()
+        sound.playBackground1()
 
         self.running = True
         while self.running:
@@ -340,6 +349,9 @@ class SettingScreen(Screen):
         self.keyLeftLabel = Button(30,300, 140, 40, "Left", self.screen)
         self.keyRightLabel = Button(30, 350, 140, 40, "Right", self.screen)
         self.keyEnterLabel = Button(330, 200, 140, 40, "Enter", self.screen)
+        
+        self.soundUpButton = Button(330, 250, 140, 40, "vol up", self.screen, sound.volumeUp)
+        self.soundDownButton = Button(330, 300, 140, 40, "vol down", self.screen, sound.volumeDown)
 
         self.buttons.append(self.screenSizeSmallButton)
         self.buttons.append(self.screenSizeMiddleButton)
@@ -354,8 +366,16 @@ class SettingScreen(Screen):
         self.buttons.append(self.keyLeftLabel)
         self.buttons.append(self.keyRightLabel)
         self.buttons.append(self.keyEnterLabel)
+        self.buttons.append(self.soundUpButton)
+        self.buttons.append(self.soundDownButton)
 
         self.clicked=False
+    
+    def volumeUp(self):
+        pygame.mixer.music.set_volume(1)
+
+    def volumeDown(self):
+        pygame.mixer.music.set_volume(0)
 
     def smallScreen(self):
         self.data['screenSize'] = [650, 400]
@@ -840,6 +860,7 @@ class SingleGameScreen(Screen):
         handsOnColor = [0, 120, 0]
         listColor = [30, 30, 30]
         isInputEsc = False
+        endSound = True
 
         #게임 시작시 실행되는 내용
         font = pygame.font.SysFont('Arial', 25)
@@ -865,6 +886,8 @@ class SingleGameScreen(Screen):
 
         clock = pygame.time.Clock()
 
+        sound.playBackground2()
+
         for i in range(len(self.computerList)):#카드 분배
             self.computerList[i].dealCards(self.deck)
 
@@ -883,6 +906,7 @@ class SingleGameScreen(Screen):
                 elif event.type == pygame.MOUSEBUTTONDOWN and isinstance(self.nowTurnPlayer, HumanPlayer):
                     for i in range(len(self.nowTurnPlayer.handsOnCard)):
                         if self.nowTurnPlayer.handsOnCard[i].canInsert and self.nowTurnPlayer.handsOnCard[i].isClicked(pygame.mouse.get_pos()):
+                            self.sound.playClickSound()
                             self.nowTurnPlayer.pushCard(i, self.discard)
                             if isinstance(self.discard.cards[0], AbilityCard):
                                 if self.nowTurnPlayer.checkUno == False and len(self.nowTurnPlayer.handsOnCard) == 1:
@@ -928,6 +952,7 @@ class SingleGameScreen(Screen):
                             self.uno()
                         elif self.tapY == 1:
                             if self.nowTurnPlayer.handsOnCard[self.tapX].canInsert:
+                                self.sound.playClickSound()
                                 self.nowTurnPlayer.pushCard(self.tapX, self.discard)
                                 if isinstance(self.discard.cards[0], AbilityCard):
                                     if self.nowTurnPlayer.checkUno == False and len(self.nowTurnPlayer.handsOnCard) == 1:
@@ -948,6 +973,13 @@ class SingleGameScreen(Screen):
                     self.data['stageClear'][2] = 'T'
                 if isinstance(self.winner, HumanPlayer) and self.stage == 'c':
                     self.data['stageClear'][3] = 'T'
+                
+                if endSound:
+                    if isinstance(self.winner, HumanPlayer):
+                        self.sound.playWinSound()
+                    elif isinstance(self.winner, ComputerPlayer):
+                        self.sound.playLoseSound()
+                    endSound = False
 
                 text = ''
                 quitButton = Button(self.data['screenSize'][0] // 2 - 50, self.data['screenSize'][1] // 3 * 2, 100, 35, 'quit', self.screen, self.quitScreen)
