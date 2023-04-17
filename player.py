@@ -148,8 +148,20 @@ class ComputerPlayerA(ComputerPlayer):
         super().__init__(name)
 
     def dealCards(self, deck):
-       #TODO 나중에 150%로 기술카드 뽑기 구현
-        pass
+        #150%로 기술카드 뽑기
+        for i in range(0, 7):
+            r = random.randint(1, 5)
+            if r <= 3:
+                for i in range(len(deck.cards)):
+                    if isinstance(deck.cards[i], AbilityCard):
+                        self.handsOnCard.append(deck.cards.pop(i))
+                        break
+            elif r > 3:
+                for i in range(len(deck.cards)):
+                    if isinstance(deck.cards[i], NumberCard):
+                        self.handsOnCard.append(deck.cards.pop(i))
+                        break
+
 
 
 if __name__ == '__main__':

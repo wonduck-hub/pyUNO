@@ -925,7 +925,7 @@ class SingleGameScreen(Screen):
                         if self.tapY == 0:
                             self.drawCard()
                         elif self.tapY == 2:
-                            self.unoButton()
+                            self.uno()
                         elif self.tapY == 1:
                             if self.nowTurnPlayer.handsOnCard[self.tapX].canInsert:
                                 self.nowTurnPlayer.pushCard(self.tapX, self.discard)
