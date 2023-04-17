@@ -959,7 +959,7 @@ class SingleGameScreen(Screen):
                 #else:
                 #for p in self.nowTurnList:
                 #    if len(p.handsOnCard) == 0:
-                text = 'winer : ' + self.winner.name
+                text = 'winner : ' + self.winner.name
                 winText = winFont.render(text, True, (0, 0, 0))
                 self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 150, self.data['screenSize'][1] // 3))
                 quitButton.process()
