@@ -1,8 +1,11 @@
 import pygame
+from utils.sound import SoundManager
+from utils.sound import sound
 
 class Button():
     def __init__(self, x, y, width, height, buttonText = 'button', 
                  screen = None, onClickFunction = None, onPress = False):
+        #self.sound = SoundManager()
         self.x = x
         self.y = y
         self.width = width
@@ -20,6 +23,7 @@ class Button():
         self.__screen = screen
 
     def runFunction(self):
+        sound.playClickSound()
         if self.__onClickFunction != None:
             self.__onClickFunction()
 
@@ -43,11 +47,9 @@ class Button():
             if pygame.mouse.get_pressed(num_buttons=3)[0]: #좌클릭
                 self.__buttonSurface.fill(self.__fillColors['pressed'])
                 if self.__onePress:
-                    if self.__onClickFunction != None:
-                        self.__onClickFunction()
+                    self.runFunction()
                 elif not self.__alreadyPressed:
-                    if self.__onClickFunction != None:
-                        self.__onClickFunction()
+                    self.runFunction()
                     self.__alreadyPressed = True
             else:
                 self.__alreadyPressed = False

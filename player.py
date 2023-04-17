@@ -29,6 +29,10 @@ class DiscardPile:
         else:
             nowColor = self.font.render(changeColor, True, (255, 255, 255))
             screen.blit(nowColor, (x + 60, y))
+        
+    def sendCard(self):
+        return self.cards.pop()
+
 
 
 # 플레이어 클래스
@@ -42,17 +46,17 @@ class Player:
         self.checkUno = False
 
     #마지막 카드에 기반해 플레이어 패에서 낼 수 있는 카드 리스트 생성
-    def playableCard(self, discardPileCard):
-        playableCard=[]
-        if discardPileCard[-1].color=="None": #마지막 카드가 색이 없는 기술카드일 경우 현재색과 같은 카드 추가
-            for card in self.handsOnCard:
-                 if card.color == "red": #현재색이 빨강색이라 가정
-                    playableCard.append(card)   
-        else:
-            for card in self.handsOnCard:
-                if card.color == discardPileCard[-1].color or card.value == discardPileCard[-1].value or card.color=="None":
-                    playableCard.append(card)   
-        return playableCard
+    #def playableCard(self, discardPileCard):
+    #    playableCard=[]
+    #    if discardPileCard[-1].color=="None": #마지막 카드가 색이 없는 기술카드일 경우 현재색과 같은 카드 추가
+    #        for card in self.handsOnCard:
+    #             if card.color == "red": #현재색이 빨강색이라 가정
+    #                playableCard.append(card)   
+    #    else:
+    #        for card in self.handsOnCard:
+    #            if card.color == discardPileCard[-1].color or card.value == discardPileCard[-1].value or card.color=="None":
+    #                playableCard.append(card)   
+    #    return playableCard
     
     def addCard(self, card):
         card.faceUp = True
@@ -78,7 +82,7 @@ class HumanPlayer(Player):
             else:
                 self.handsOnCard[i].show(x + (i * 50), y)
     
-    def checkCandInsert(self, discard, changeColor):
+    def checkCanInsert(self, discard, changeColor):
         for i in range(len(self.handsOnCard)):
             if discard.cards[0].value == 'changeColor':
                 if self.handsOnCard[i].color == changeColor or self.handsOnCard[i].value == discard.cards[0].value or self.handsOnCard[i].color == 'None':
@@ -107,6 +111,9 @@ class ComputerPlayer(Player):
     def __init__(self, name):
         super().__init__(name)
         self.font = pygame.font.Font(None, 20)
+    
+    def dealCards(self, deck):
+        self.handsOnCard += deck.prepareCard()
 
     def showHandsOnCard(self, x, y, screen):
         name = self.font.render(self.name, True, (128, 128, 128))
@@ -136,7 +143,24 @@ class ComputerPlayer(Player):
         else:
             return False
 
-        
+class ComputerPlayerA(ComputerPlayer): 
+    def __init__(self, name):
+        super().__init__(name)
+
+    def dealCards(self, deck):
+        #150%로 기술카드 뽑기
+        for i in range(0, 7):
+            r = random.randint(1, 5)
+            if r <= 3:
+                for i in range(len(deck.cards)):
+                    if isinstance(deck.cards[i], AbilityCard):
+                        self.handsOnCard.append(deck.cards.pop(i))
+                        break
+            elif r > 3:
+                for i in range(len(deck.cards)):
+                    if isinstance(deck.cards[i], NumberCard):
+                        self.handsOnCard.append(deck.cards.pop(i))
+                        break
 
 
 

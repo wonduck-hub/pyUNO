@@ -28,6 +28,12 @@ class Card:
         self.imagePath = f"./card_image/{color}_{value}.png"
         self.image = pygame.transform.scale(pygame.image.load(self.imagePath), (self.width, self.height))
         self.rect = self.image.get_rect() # 카드의 사각형 영역
+
+    def getX(self):
+        return self.x
+    
+    def getY(self):
+        return self.y
         
     def show(self, x, y): # 위치 정보 인자로 받아 카드 그리기
         self.x = x
@@ -110,11 +116,13 @@ class Deck:
         self.cards.append(AbilityCard("blue", 'skip', self.screen))
 
         #none color
-        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        #self.cards.append(AbilityCard("None", 'defense', self.screen))
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        self.cards.append(AbilityCard("None", 'defense', self.screen))
+        self.cards.append(AbilityCard("None", 'joker', self.screen))
+        self.cards.append(AbilityCard("None", 'joker', self.screen))
         self.cards.append(AbilityCard("None", 'joker', self.screen))
         self.cards.append(AbilityCard("None", 'joker', self.screen))
 
@@ -137,8 +145,9 @@ class Deck:
             card = self.cards.pop(0)
         return card
 
-    def addCard(self, card): # 인자로 받은 card를 cards 리스트에 추가
-        self.cards.append(card)
+    def addCard(self, disCard): # 
+        if len(disCard.cards) >= 2:
+            self.cards.append(disCard.sendCard())
 
 if __name__ == '__main__':
     pygame.init()
