@@ -18,7 +18,6 @@ class Screen:
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         pygame.display.set_caption('PyUNO')
         self.running = True
-        #self.sound = SoundManager()
 
         
 
@@ -266,7 +265,6 @@ class StartScreen(Screen):
         selectPos = self.buttons[0].getPos()
         isShowHelp = False
 
-        #self.sound.playBackground1()
         sound.playBackground1()
 
         self.running = True
@@ -336,8 +334,8 @@ class SettingScreen(Screen):
         self.screenSizeMiddleButton = Button(180, 50, 140, 40, "700X450", self.screen, self.middleScreen)
         self.screenSizeLargeButton = Button(330, 50, 140, 40, "750X500", self.screen, self.largeScreen)
 
-        self.screenColorBlindnessOn = Button(30, 145, 140, 40, "on", self.screen)
-        self.screenColorBlindnessOff = Button(180, 145, 140, 40, "off", self.screen)
+        self.screenColorBlindnessOn = Button(30, 145, 140, 40, "on", self.screen, self.blindnessOn)
+        self.screenColorBlindnessOff = Button(180, 145, 140, 40, "off", self.screen, self.blindnessOff)
 
         self.saveButton = Button(self.width - 150, self.height - 100, 140, 40, "save", self.screen, self.saveData)
         self.exitButton = Button(self.width - 150, self.height - 50, 140, 40, "exit", self.screen, self.quitScreen)
@@ -370,6 +368,12 @@ class SettingScreen(Screen):
         self.buttons.append(self.soundDownButton)
 
         self.clicked=False
+
+    def blindnessOn(self):
+        self.data['colorBlindness'] = 'on'
+
+    def blindnessOff(self):
+        self.data['colorBlindness'] = 'off'
     
     def smallScreen(self):
         self.data['screenSize'] = [650, 400]
@@ -387,7 +391,6 @@ class SettingScreen(Screen):
         self.running = False
 
     def resetData(self):
-        #나중에 추가 필요
         self.data['screenSize'] = [700, 450]
         self.data['keyControl'][0] = 'up'
         self.data['keyControl'][1] = 'down'
@@ -900,7 +903,7 @@ class SingleGameScreen(Screen):
                 elif event.type == pygame.MOUSEBUTTONDOWN and isinstance(self.nowTurnPlayer, HumanPlayer):
                     for i in range(len(self.nowTurnPlayer.handsOnCard)):
                         if self.nowTurnPlayer.handsOnCard[i].canInsert and self.nowTurnPlayer.handsOnCard[i].isClicked(pygame.mouse.get_pos()):
-                            self.sound.playClickSound()
+                            sound.playClickSound()
                             self.nowTurnPlayer.pushCard(i, self.discard)
                             if isinstance(self.discard.cards[0], AbilityCard):
                                 if self.nowTurnPlayer.checkUno == False and len(self.nowTurnPlayer.handsOnCard) == 1:
@@ -946,7 +949,7 @@ class SingleGameScreen(Screen):
                             self.uno()
                         elif self.tapY == 1:
                             if self.nowTurnPlayer.handsOnCard[self.tapX].canInsert:
-                                self.sound.playClickSound()
+                                sound.playClickSound()
                                 self.nowTurnPlayer.pushCard(self.tapX, self.discard)
                                 if isinstance(self.discard.cards[0], AbilityCard):
                                     if self.nowTurnPlayer.checkUno == False and len(self.nowTurnPlayer.handsOnCard) == 1:
@@ -970,9 +973,9 @@ class SingleGameScreen(Screen):
                 
                 if endSound:
                     if isinstance(self.winner, HumanPlayer):
-                        self.sound.playWinSound()
+                        sound.playWinSound()
                     elif isinstance(self.winner, ComputerPlayer):
-                        self.sound.playLoseSound()
+                        sound.playLoseSound()
                     endSound = False
 
                 text = ''

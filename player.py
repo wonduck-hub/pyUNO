@@ -45,19 +45,6 @@ class Player:
         self.time = 2000
         self.checkUno = False
 
-    #마지막 카드에 기반해 플레이어 패에서 낼 수 있는 카드 리스트 생성
-    #def playableCard(self, discardPileCard):
-    #    playableCard=[]
-    #    if discardPileCard[-1].color=="None": #마지막 카드가 색이 없는 기술카드일 경우 현재색과 같은 카드 추가
-    #        for card in self.handsOnCard:
-    #             if card.color == "red": #현재색이 빨강색이라 가정
-    #                playableCard.append(card)   
-    #    else:
-    #        for card in self.handsOnCard:
-    #            if card.color == discardPileCard[-1].color or card.value == discardPileCard[-1].value or card.color=="None":
-    #                playableCard.append(card)   
-    #    return playableCard
-    
     def addCard(self, card):
         card.faceUp = True
         self.handsOnCard.append(card)

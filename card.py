@@ -24,8 +24,12 @@ class Card:
         self.height = 80  
         self.faceUp = True # 카드 뒤집어져 있는지 여부, 기본값 = back
         self.canInsert = False
+        self.data = SettingManager().read()
 
-        self.imagePath = f"./card_image/{color}_{value}.png"
+        if self.data['colorBlindness'] == "on":
+            self.imagePath = f"./blindness_card_image/{color}_{value}.png"
+        else:
+            self.imagePath = f"./card_image/{color}_{value}.png"
         self.image = pygame.transform.scale(pygame.image.load(self.imagePath), (self.width, self.height))
         self.rect = self.image.get_rect() # 카드의 사각형 영역
 
