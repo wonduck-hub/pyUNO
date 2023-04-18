@@ -14,5 +14,12 @@
         "left",
         "right",
         "return"
-    ]
+    ],
+    "stageClear": [
+        "T",
+        "F",
+        "F",
+        "F"
+    ],
+    "colorBlindness": "on"
 }
