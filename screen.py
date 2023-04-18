@@ -24,28 +24,31 @@ class Screen:
 class MapScreen(Screen):
     def __init__(self):
         super().__init__()
-        # self.setting = settingManager()
+        self.setting = SettingManager()
+        # self.screen = self.data['screenSize']
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
         
+        self.areaSize = self.data['screenSize'][0] // 4
         self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), (self.data['screenSize'][0], self.data['screenSize'][1]))
-        self.area1 = pygame.transform.scale(pygame.image.load("map_image/area1.png"), (200, 200))
-        self.area2 = pygame.transform.scale(pygame.image.load("map_image/area2.png"), (200, 200))
-        self.area3 = pygame.transform.scale(pygame.image.load("map_image/area3.png"), (200, 200))
-        self.area4 = pygame.transform.scale(pygame.image.load("map_image/area4.png"), (200, 200))
+        self.area1 = pygame.transform.scale(pygame.image.load("map_image/area1.png"), (self.areaSize, self.areaSize))
+        self.area2 = pygame.transform.scale(pygame.image.load("map_image/area2.png"), (self.areaSize, self.areaSize))
+        self.area3 = pygame.transform.scale(pygame.image.load("map_image/area3.png"), (self.areaSize, self.areaSize))
+        self.area4 = pygame.transform.scale(pygame.image.load("map_image/area4.png"), (self.areaSize, self.areaSize))
         
-        self.area1Lock = pygame.transform.scale(pygame.image.load("map_image/area1Lock.png"), (200, 200))
-        self.area2Lock = pygame.transform.scale(pygame.image.load("map_image/area2Lock.png"), (200, 200))
-        self.area3Lock = pygame.transform.scale(pygame.image.load("map_image/area3Lock.png"), (200, 200))
-        self.area4Lock = pygame.transform.scale(pygame.image.load("map_image/area4Lock.png"), (200, 200))
+        self.area1Lock = pygame.transform.scale(pygame.image.load("map_image/area1Lock.png"), (self.areaSize, self.areaSize))
+        self.area2Lock = pygame.transform.scale(pygame.image.load("map_image/area2Lock.png"), (self.areaSize, self.areaSize))
+        self.area3Lock = pygame.transform.scale(pygame.image.load("map_image/area3Lock.png"), (self.areaSize, self.areaSize))
+        self.area4Lock = pygame.transform.scale(pygame.image.load("map_image/area4Lock.png"), (self.areaSize, self.areaSize))
+
       
-        # 이미지 위치
         self.areas = [
-              (100, 0),
-              (450, 50),
-              (100, 200),
-              (450, 250)
+              (self.width // 4 * 0.5, self.height // 4 * 0.1),
+              (self.width // 4 * 2.5, self.height // 4 * 0.5),
+              (self.width // 4 * 0.7, self.height // 4 * 1.9),
+              (self.width // 4 * 2.7, self.height // 4 * 2.2)
           ]
+        
 
         self.mapRect = self.mapImage.get_rect()
         self.area1Rect = self.area1.get_rect(topleft = self.areas[0])
@@ -106,7 +109,7 @@ class MapScreen(Screen):
 
     def quit(self):
         self.running = False
-
+    
     def draw(self):
         self.screen.blit(self.mapImage, (0, 0))
         for i in range(4):
@@ -120,6 +123,7 @@ class MapScreen(Screen):
           self.screen.blit(eval("self.area3"), self.areas[2])
         if self.data['stageClear'][3] == 'T':
           self.screen.blit(eval("self.area4"), self.areas[3])
+
           
     def askStart(self, area):
         # 창 생성
@@ -207,6 +211,7 @@ class MapScreen(Screen):
                         selectPos = (self.buttons[buttonIndex].getX(), self.buttons[buttonIndex].getY())
 
                     elif pygame.key.name(event.key) == self.data['keyControl'][4]:
+                      
                         self.buttons[buttonIndex].runFunction()
                 
                 # # 마우스 클릭으로 지역 선택
@@ -231,9 +236,10 @@ class MapScreen(Screen):
                         #self.askStart(4)
             
             i = 0
+            
             for c in self.data['stageClear']:
                 if c == 'T':
-                    self.buttons[i].process()
+                    self.buttons[i].process()                  
                 i += 1
             
             self.screen.blit(self.textSelect, selectPos)
@@ -1126,5 +1132,7 @@ class SingleGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
-    a = SingleGameScreen('player', [ComputerPlayer('a')])
-    a.run()
+    b = MapScreen()
+    b.run()
+    # a = SingleGameScreen('player', [ComputerPlayer('a')])
+    # a.run()
