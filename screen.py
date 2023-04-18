@@ -112,13 +112,13 @@ class MapScreen(Screen):
         for i in range(4):
           self.screen.blit(eval(f"self.area{i+1}Lock"), self.areas[i])
         
-        if self.area1Open:
+        if self.data['stageClear'][0] == 'T':
           self.screen.blit(eval("self.area1"), self.areas[0])
-        if self.area2Open:
+        if self.data['stageClear'][1] == 'T':
           self.screen.blit(eval("self.area2"), self.areas[1])
-        if self.area3Open:
+        if self.data['stageClear'][2] == 'T':
           self.screen.blit(eval("self.area3"), self.areas[2])
-        if self.area4Open:
+        if self.data['stageClear'][3] == 'T':
           self.screen.blit(eval("self.area4"), self.areas[3])
           
     def askStart(self, area):
@@ -209,23 +209,23 @@ class MapScreen(Screen):
                     elif pygame.key.name(event.key) == self.data['keyControl'][4]:
                         self.buttons[buttonIndex].runFunction()
                 
-                # 마우스 클릭으로 지역 선택
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mousePos = pygame.mouse.get_pos()
-                    if self.area1Rect.collidepoint(mousePos):
-                      if self.area1Open:
-                        # self.askStart(1)
+                # # 마우스 클릭으로 지역 선택
+                # elif event.type == pygame.MOUSEBUTTONDOWN:
+                #     mousePos = pygame.mouse.get_pos()
+                #     if self.area1Rect.collidepoint(mousePos):
+                #       if self.data['stageclear'][] == 'T':
+                #         # self.askStart(1)
                         
-                        self.showStageA
+                #         self.showStageA
                                                                                                                                    
-                    elif self.area2Rect.collidepoint(mousePos):    
-                      if self.area2Open:
-                        self.askStart(2)
-                      else:
-                        self.alert("You must Stage A Clear!")
-                        pygame.display.update()
-                        pygame.time.delay(2000) 
-                        self.draw()
+                #     elif self.area2Rect.collidepoint(mousePos):    
+                #       if self.data['stageclear'][1] == 'T':
+                #         self.askStart(2)
+                #       else:
+                #         self.alert("You must Stage A Clear!")
+                #         pygame.display.update()
+                #         pygame.time.delay(2000) 
+                #         self.draw()
                         
                     #elif self.area4Rect.collidepoint(mousePos):  
                         #self.askStart(4)
@@ -780,11 +780,6 @@ class SingleGameScreen(Screen):
         self.nowTurnPlayer.addCard(self.deck.drawCard())
         self.endTurn()
 
-    def openStage(self): # player 승리시 다음 stage open 가능
-        if self.playerWin:
-          return True
-        else:
-          return False
 
     def quitScreen(self):
         self.running = False
