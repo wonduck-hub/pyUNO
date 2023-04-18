@@ -248,11 +248,13 @@ class StartScreen(Screen):
         inGame = LobbyScreen()
         inGame.run()
         sound.playBackground1()
+        self.data = self.setting.read()
     
     def showMap(self):
         map = MapScreen()
         map.run()
         sound.playBackground1()
+        self.data = self.setting.read()
     
     def run(self):
 
