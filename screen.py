@@ -695,9 +695,9 @@ class SingleGameScreen(Screen):
         self.deck.addCard(self.discard)
 
         #내 선택
-        self.tap[0] = [self.drawCardButton]
+        self.tap[0][0] = self.drawCardButton
         self.tap[1] = self.nowTurnPlayer.handsOnCard
-        self.tap[2] = [self.unoButton]
+        self.tap[2][0] = self.unoButton
 
 
         if self.stage == 'c':
