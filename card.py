@@ -120,13 +120,11 @@ class Deck:
         self.cards.append(AbilityCard("blue", 'skip', self.screen))
 
         #none color
-        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        self.cards.append(AbilityCard("None", 'changeColor', self.screen))
-        self.cards.append(AbilityCard("None", 'defense', self.screen))
-        self.cards.append(AbilityCard("None", 'joker', self.screen))
-        self.cards.append(AbilityCard("None", 'joker', self.screen))
+        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        #self.cards.append(AbilityCard("None", 'changeColor', self.screen))
+        #self.cards.append(AbilityCard("None", 'defense', self.screen))
         self.cards.append(AbilityCard("None", 'joker', self.screen))
         self.cards.append(AbilityCard("None", 'joker', self.screen))
 
@@ -177,16 +175,7 @@ if __name__ == '__main__':
         
         # 예시코드
         # 숫자 카드 객체 생성
-        number_card = NumberCard("blue", 1)
-        # 특수 능력 카드 객체 생성
-        ability_card = AbilityCard("None", "joker")
-        ability_card1 = AbilityCard("green", "skip")
-        # 카드 그리기
-        number_card.show(50, 50)
-        ability_card.show(100, 100)
-        ability_card1.flip()
-        ability_card1.show(200, 200)
-        
+       
         # 화면 업데이트
         pygame.display.update()
 

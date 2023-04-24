@@ -24,24 +24,31 @@ class Screen:
 class MapScreen(Screen):
     def __init__(self):
         super().__init__()
-        # self.setting = settingManager()
+        self.setting = SettingManager()
+        # self.screen = self.data['screenSize']
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
-        #self.screen = pygame.display.set_mode(self.data['screenSize'])
-      
+        
+        self.areaSize = self.data['screenSize'][0] // 4
         self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), (self.data['screenSize'][0], self.data['screenSize'][1]))
-        self.area1 = pygame.image.load("map_image/area_1.png")
-        self.area2 = pygame.image.load("map_image/area_2.png")
-        self.area3 = pygame.image.load("map_image/area_3.png")
-        self.area4 = pygame.image.load("map_image/area_4.png")
+        self.area1 = pygame.transform.scale(pygame.image.load("map_image/area1.png"), (self.areaSize, self.areaSize))
+        self.area2 = pygame.transform.scale(pygame.image.load("map_image/area2.png"), (self.areaSize, self.areaSize))
+        self.area3 = pygame.transform.scale(pygame.image.load("map_image/area3.png"), (self.areaSize, self.areaSize))
+        self.area4 = pygame.transform.scale(pygame.image.load("map_image/area4.png"), (self.areaSize, self.areaSize))
+        
+        self.area1Lock = pygame.transform.scale(pygame.image.load("map_image/area1Lock.png"), (self.areaSize, self.areaSize))
+        self.area2Lock = pygame.transform.scale(pygame.image.load("map_image/area2Lock.png"), (self.areaSize, self.areaSize))
+        self.area3Lock = pygame.transform.scale(pygame.image.load("map_image/area3Lock.png"), (self.areaSize, self.areaSize))
+        self.area4Lock = pygame.transform.scale(pygame.image.load("map_image/area4Lock.png"), (self.areaSize, self.areaSize))
+
       
-        # 이미지 위치
         self.areas = [
-              (100, 0),
-              (450, 50),
-              (100, 200),
-              (450, 250)
+              (self.width // 4 * 0.5, self.height // 4 * 0.1),
+              (self.width // 4 * 2.5, self.height // 4 * 0.5),
+              (self.width // 4 * 0.7, self.height // 4 * 1.9),
+              (self.width // 4 * 2.7, self.height // 4 * 2.2)
           ]
+        
 
         self.mapRect = self.mapImage.get_rect()
         self.area1Rect = self.area1.get_rect(topleft = self.areas[0])
@@ -74,6 +81,7 @@ class MapScreen(Screen):
         SingleGameScreen('player', computerList, 'a').run()
         self.data = self.setting.read()
         self.running = False
+       
     
     def showStageB(self):
         computerList = []
@@ -101,12 +109,20 @@ class MapScreen(Screen):
 
     def quit(self):
         self.running = False
-
+    
     def draw(self):
         self.screen.blit(self.mapImage, (0, 0))
-      
         for i in range(4):
-            self.screen.blit(eval(f"self.area{i+1}"), self.areas[i])
+          self.screen.blit(eval(f"self.area{i+1}"), self.areas[i])
+        
+        if self.data['stageClear'][0] == 'T':
+          self.screen.blit(eval("self.area1"), self.areas[0])
+        if self.data['stageClear'][1] == 'T':
+          self.screen.blit(eval("self.area2"), self.areas[1])
+        if self.data['stageClear'][2] == 'T':
+          self.screen.blit(eval("self.area3"), self.areas[2])
+        if self.data['stageClear'][3] == 'T':
+          self.screen.blit(eval("self.area4"), self.areas[3])
 
           
     def askStart(self, area):
@@ -118,15 +134,15 @@ class MapScreen(Screen):
       
         # 텍스트 출력
         font = pygame.font.SysFont(None, 30)
-        text = font.render(f"Do you want to Battle in Level{area}?", True, (0, 0, 0))
+        text = font.render(f"Do you want to Battle in Stage{area}?", True, (0, 0, 0))
         textRect = text.get_rect(center = (dialog_x // 2, dialog_y // 2))
         dialog.blit(text, textRect)
       
         # 버튼 생성
         acceptButton = pygame.Rect(90, 65, 50, 20)
         refuseButton = pygame.Rect(210, 65, 50, 20)
-        pygame.draw.rect(dialog, (255, 0, 0), acceptButton)
-        pygame.draw.rect(dialog, (0, 0, 255), refuseButton)
+        pygame.draw.rect(dialog, (0, 0, 0), acceptButton)
+        pygame.draw.rect(dialog, (0, 0, 0), refuseButton)
       
         acceptButtonText = font.render("Yes", True, (255, 255, 255))
         acceptButtonTextRect = acceptButtonText.get_rect(center = acceptButton.center)
@@ -137,8 +153,32 @@ class MapScreen(Screen):
         dialog.blit(refuseButtonText, refuseButtonTextRect)
       
         dialogRect = dialog.get_rect(center = self.screen.get_rect().center)
-        self.screen.blit(dialog, dialogRect)
-    
+        self.screen.blit(dialog, dialogRect)             
+        
+        while True:
+          for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if acceptButtonTextRect.collidepoint(event.pos):
+                  return True
+                    
+                elif refuseButton.collidepoint(event.pos):
+                  return False
+
+          pygame.display.update()
+       
+                      
+    # 이전 stage 깨지 못한경우 경고창              
+    #def alert(self, message):
+    #  font = pygame.font.SysFont('Arial', 36)
+    #  text = font.render(message, True, (255, 0, 0))
+    #  self.screen.blit(text, (self.width/2 - text.get_width()/2, self.height/2 - text.get_height()/2))
+    #  pygame.display.update()
+      
+
     def run(self):
   
         self.draw()
@@ -157,7 +197,7 @@ class MapScreen(Screen):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     self.running = False
-                
+                    
                 elif event.type == pygame.KEYDOWN:
                     if pygame.key.name(event.key) == self.data['keyControl'][1] or pygame.key.name(event.key) == self.data['keyControl'][3]: #화살표 아래, 오른쪽 버튼을 눌렀을 때
                         temp = temp + 1
@@ -171,27 +211,35 @@ class MapScreen(Screen):
                         selectPos = (self.buttons[buttonIndex].getX(), self.buttons[buttonIndex].getY())
 
                     elif pygame.key.name(event.key) == self.data['keyControl'][4]:
+                      
                         self.buttons[buttonIndex].runFunction()
                 
-                # 마우스 클릭으로 지역 선택
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mousePos = pygame.mouse.get_pos()
-                    #if self.area1Rect.collidepoint(mousePos):
-                        #self.askStart(1)
+                # # 마우스 클릭으로 지역 선택
+                # elif event.type == pygame.MOUSEBUTTONDOWN:
+                #     mousePos = pygame.mouse.get_pos()
+                #     if self.area1Rect.collidepoint(mousePos):
+                #       if self.data['stageclear'][] == 'T':
+                #         # self.askStart(1)
                         
-                    #elif self.area2Rect.collidepoint(mousePos):    
-                        #self.askStart(2)
-                        
-                    #elif self.area3Rect.collidepoint(mousePos):
-                        #self.askStart(3)
+                #         self.showStageA
+                                                                                                                                   
+                #     elif self.area2Rect.collidepoint(mousePos):    
+                #       if self.data['stageclear'][1] == 'T':
+                #         self.askStart(2)
+                #       else:
+                #         self.alert("You must Stage A Clear!")
+                #         pygame.display.update()
+                #         pygame.time.delay(2000) 
+                #         self.draw()
                         
                     #elif self.area4Rect.collidepoint(mousePos):  
                         #self.askStart(4)
             
             i = 0
+            
             for c in self.data['stageClear']:
                 if c == 'T':
-                    self.buttons[i].process()
+                    self.buttons[i].process()                  
                 i += 1
             
             self.screen.blit(self.textSelect, selectPos)
@@ -737,7 +785,7 @@ class SingleGameScreen(Screen):
             self.nowTurnPlayer.addCard(self.deck.drawCard())
         self.nowTurnPlayer.addCard(self.deck.drawCard())
         self.endTurn()
-            
+
 
     def quitScreen(self):
         self.running = False
@@ -869,8 +917,8 @@ class SingleGameScreen(Screen):
         self.deck.shuffle()
         self.nowTurnList = [self.player] + self.computerList 
         self.discard.addCard(self.deck.drawCard())
-        if isinstance(self.discard.cards[0], AbilityCard):
-            self.ability(self.discard.cards[0])
+        #if isinstance(self.discard.cards[0], AbilityCard):
+        #    self.ability(self.discard.cards[0])
 
         self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
         self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time
