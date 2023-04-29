@@ -917,8 +917,6 @@ class SingleGameScreen(Screen):
         self.deck.shuffle()
         self.nowTurnList = [self.player] + self.computerList 
         self.discard.addCard(self.deck.drawCard())
-        #if isinstance(self.discard.cards[0], AbilityCard):
-        #    self.ability(self.discard.cards[0])
 
         self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
         self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time
