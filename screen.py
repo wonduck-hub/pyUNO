@@ -7,6 +7,7 @@ from utils.button import Button
 from utils.sound import sound
 from card import NumberCard, Deck, AbilityCard
 from player import HumanPlayer
+from player import HumanPlayerA
 from player import ComputerPlayer
 from player import DiscardPile
 from player import ComputerPlayerA
@@ -29,7 +30,9 @@ class MapScreen(Screen):
         self.height = self.screen.get_height()
         #self.screen = pygame.display.set_mode(self.data['screenSize'])
       
-        self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), (self.data['screenSize'][0], self.data['screenSize'][1]))
+        self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), 
+                                               (self.data['screenSize'][0], 
+                                                self.data['screenSize'][1]))
         self.area1 = pygame.image.load("map_image/area_1.png")
         self.area2 = pygame.image.load("map_image/area_2.png")
         self.area3 = pygame.image.load("map_image/area_3.png")
@@ -647,7 +650,7 @@ class SingleGameScreen(Screen):
         super().__init__()
         self.stage = stage
         self.playerName = name
-        self.player = HumanPlayer(name)
+        self.player = HumanPlayerA(name)
         self.computerList  = []
         self.computerList = self.computerList + computerList
         self.deck = Deck(self.screen)
@@ -865,12 +868,12 @@ class SingleGameScreen(Screen):
         font = pygame.font.SysFont('Arial', 25)
         winFont = pygame.font.SysFont('Arial', 60)
         self.deck.createDeck()
-        self.player.handsOnCard = self.player.handsOnCard + self.deck.prepareCard()
         self.deck.shuffle()
+        self.player.dealCards(self.deck)
         self.nowTurnList = [self.player] + self.computerList 
         self.discard.addCard(self.deck.drawCard())
-        if isinstance(self.discard.cards[0], AbilityCard):
-            self.ability(self.discard.cards[0])
+        #if isinstance(self.discard.cards[0], AbilityCard):
+        #    self.ability(self.discard.cards[0])
 
         self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
         self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time

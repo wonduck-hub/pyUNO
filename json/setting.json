@@ -17,9 +17,9 @@
     ],
     "stageClear": [
         "T",
-        "F",
-        "F",
-        "F"
+        "T",
+        "T",
+        "T"
     ],
-    "colorBlindness": "on"
+    "colorBlindness": "off"
 }
