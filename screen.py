@@ -2,6 +2,7 @@ import pygame
 import random
 import sys
 import time
+import datetime
 from utils.saveManager import SettingManager
 from utils.button import Button
 from utils.sound import sound
@@ -19,7 +20,118 @@ class Screen:
         pygame.display.set_caption('PyUNO')
         self.running = True
 
+class Achievement(Screen):
+  def __init__(self, name, description, icon, achieved, achievedDate):
+    super().__init__()
+    self.icon = icon
+    self.image = pygame.image.load(icon).convert_alpha()
+    self.name = name
+    self.description = description
+    self.achieved = False
+    self.achievedDate = None
+  
+class AchievementList(Screen):
+  def __init__(self):
+    super().__init__()
+    self.achievements = [
+                      Achievement(name = '첫 승리', description = '싱글 플레이어 대전에서 승리', icon = 'victory_image/victory1.png', achieved = False, achievedDate=None),
+                      Achievement(name = '지역 탐험가', description = '스토리 모드에서 각 지역별 승리', icon = 'victory_image/victory2.png', achieved = False, achievedDate=None),
+                      Achievement(name = '스피드 게임', description = '싱글 플레이어 게임에서 10턴 안에 승리', icon = 'victory_image/victory3.png', achieved = False, achievedDate=None),
+                      Achievement(name = '숫자만으로', description = '기술 카드를 단 한번도 사용하지 않고 승리', icon = 'victory_image/victory4.png', achieved = False, achievedDate=None),
+                      Achievement(name = '역전승', description = '다른 플레이어가 UNO를 선언한 뒤에 승리', icon = 'victory_image/victory5.png', achieved = False, achievedDate=None),
+                      Achievement(name = '1명쯤이야', description = '멀티 플레이어 1명과의 대전에서 승리', icon = 'victory_image/victory6.png', achieved = False, achievedDate=None),
+                      Achievement(name = '2명도 가능해', description = '멀티 플레이어 2명과의 대전에서 승리', icon = 'victory_image/victory7.png', achieved = False, achievedDate=None),
+                      Achievement(name = 'UNO 고수', description = '멀티 플레이어 3명과의 대전에서 승리', icon = 'victory_image/victory8.png', achieved = False, achievedDate=None),
+                      ]
+  
+class AchievementScreen(Screen):
+  def __init__(self):
+      super().__init__()
+      self.achievementSystem = AchievementList()
+      self.font = pygame.font.SysFont('malgungothicsemilight', 14)
+      self.width = self.screen.get_width()
+      self.height = self.screen.get_height()
+          
+  def draw(self):
+    y = 50
+    for achievement in self.achievementSystem.achievements[:4]:
+      icon = pygame.transform.scale(achievement.image, (50, 50))
+      name = achievement.name
+      description = achievement.description
+      date = achievement.achievedDate
+
+      # 배경 사각형
+      rect = pygame.Rect(20, y, self.width/2 - 40, self.height/4 -40)
+      pygame.draw.rect(self.screen, (255, 255, 255), rect)
+
+      # 업적 아이콘
+      self.screen.blit(icon, (25, y+20))
+
+      # 업적 이름
+      nameText = self.font.render(name, True, (0, 0, 0))
+      self.screen.blit(nameText, (95, y+10))
+
+      # 업적 설명
+      descriptionText = self.font.render(description, True, (0, 0, 0))
+      self.screen.blit(descriptionText, (95, y+35))
+      
+      if achievement.achieved: # 업적 달성하면
+      # 업적 달성 일자
+        self.achievedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        dateText = self.font.render(str(date) + '에 달성됨', True, (0, 0, 0))
+      else:
+        dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
         
+      self.screen.blit(dateText, (95, y+60))
+
+      y += 100
+    
+    y = 50
+    for achievement in self.achievementSystem.achievements[4:]:
+
+      icon = pygame.transform.scale(achievement.image, (50, 50))
+      name = achievement.name
+      description = achievement.description
+      
+      # 배경 사각형
+      rect = pygame.Rect(self.width - 20 - (self.width/2-40), y, self.width/2 - 40, self.height/4 -40)
+      pygame.draw.rect(self.screen, (255, 255, 255), rect)
+
+      # 업적 아이콘
+      self.screen.blit(icon, (self.width-15-(self.width/2-40), y+20))
+
+      # 업적 이름
+      name_text = self.font.render(name, True, (0, 0, 0))
+      self.screen.blit(name_text, (self.width+55-(self.width/2-40), y+10))
+
+      # 업적 설명
+      description_text = self.font.render(description, True, (0, 0, 0))
+      self.screen.blit(description_text, ((self.width+55-(self.width/2-40), y+35)))
+      
+      if achievement.achieved: # 업적 달성하면
+      # 업적 달성 일자
+        self.achievedDate = datetime.now().strftime('%Y-%m-%d %H:%M')
+        dateText = self.font.render(str(date) + '에 달성됨', True, (0, 0, 0))
+      else:
+        dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
+        self.screen.blit(dateText, ((self.width+55-(self.width/2-40), y+60))) 
+
+      y += 100
+
+  def run(self):
+    running = True
+    while running:
+      for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+          running = False
+          
+      self.screen.fill([128, 128, 128])
+      self.draw()
+          
+      
+      pygame.display.update()
+
+    pygame.quit()
 
 class MapScreen(Screen):
     def __init__(self):
@@ -31,15 +143,15 @@ class MapScreen(Screen):
         
         self.areaSize = self.data['screenSize'][0] // 4
         self.mapImage = pygame.transform.scale(pygame.image.load("map_image/map.png"), (self.data['screenSize'][0], self.data['screenSize'][1]))
-        self.area1 = pygame.transform.scale(pygame.image.load("map_image/area1.png"), (self.areaSize, self.areaSize))
-        self.area2 = pygame.transform.scale(pygame.image.load("map_image/area2.png"), (self.areaSize, self.areaSize))
-        self.area3 = pygame.transform.scale(pygame.image.load("map_image/area3.png"), (self.areaSize, self.areaSize))
-        self.area4 = pygame.transform.scale(pygame.image.load("map_image/area4.png"), (self.areaSize, self.areaSize))
+        self.area1 = pygame.transform.scale(pygame.image.load("map_image/stage1.png"), (self.areaSize, self.areaSize))
+        self.area2 = pygame.transform.scale(pygame.image.load("map_image/stage2.png"), (self.areaSize, self.areaSize))
+        self.area3 = pygame.transform.scale(pygame.image.load("map_image/stage3.png"), (self.areaSize, self.areaSize))
+        self.area4 = pygame.transform.scale(pygame.image.load("map_image/stage4.png"), (self.areaSize, self.areaSize))
         
-        self.area1Lock = pygame.transform.scale(pygame.image.load("map_image/area1Lock.png"), (self.areaSize, self.areaSize))
-        self.area2Lock = pygame.transform.scale(pygame.image.load("map_image/area2Lock.png"), (self.areaSize, self.areaSize))
-        self.area3Lock = pygame.transform.scale(pygame.image.load("map_image/area3Lock.png"), (self.areaSize, self.areaSize))
-        self.area4Lock = pygame.transform.scale(pygame.image.load("map_image/area4Lock.png"), (self.areaSize, self.areaSize))
+        self.area1Lock = pygame.transform.scale(pygame.image.load("map_image/stage1Lock.png"), (self.areaSize, self.areaSize))
+        self.area2Lock = pygame.transform.scale(pygame.image.load("map_image/stage2Lock.png"), (self.areaSize, self.areaSize))
+        self.area3Lock = pygame.transform.scale(pygame.image.load("map_image/stage3Lock.png"), (self.areaSize, self.areaSize))
+        self.area4Lock = pygame.transform.scale(pygame.image.load("map_image/stage4Lock.png"), (self.areaSize, self.areaSize))
 
       
         self.areas = [
@@ -125,22 +237,22 @@ class MapScreen(Screen):
           self.screen.blit(eval("self.area4"), self.areas[3])
 
           
-    def askStart(self, area):
+    def askStart(self):
         # 창 생성
-        dialog_x = 350
+        dialog_x = 400
         dialog_y = 100
         dialog = pygame.Surface((dialog_x, dialog_y))
         dialog.fill((255, 255, 255))
       
         # 텍스트 출력
-        font = pygame.font.SysFont(None, 30)
-        text = font.render(f"Do you want to Battle in Stage{area}?", True, (0, 0, 0))
+        font = pygame.font.SysFont('Arial', 30)
+        text = font.render("Do you want to Battle in this Stage?", True, (0, 0, 0))
         textRect = text.get_rect(center = (dialog_x // 2, dialog_y // 2))
         dialog.blit(text, textRect)
       
         # 버튼 생성
-        acceptButton = pygame.Rect(90, 65, 50, 20)
-        refuseButton = pygame.Rect(210, 65, 50, 20)
+        acceptButton = pygame.Rect(dialog_x/4, dialog_y*2/3, 50, 20)
+        refuseButton = pygame.Rect(dialog_x*2/3, dialog_y*2/3, 50, 20)
         pygame.draw.rect(dialog, (0, 0, 0), acceptButton)
         pygame.draw.rect(dialog, (0, 0, 0), refuseButton)
       
@@ -161,7 +273,7 @@ class MapScreen(Screen):
                 pygame.quit()
                 sys.exit()
 
-            elif event.type == pygame.MOUSEBUTTONUP:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 if acceptButtonTextRect.collidepoint(event.pos):
                   return True
                     
@@ -210,11 +322,14 @@ class MapScreen(Screen):
                         buttonIndex = temp % showButtonCount
                         selectPos = (self.buttons[buttonIndex].getX(), self.buttons[buttonIndex].getY())
 
-                    elif pygame.key.name(event.key) == self.data['keyControl'][4]:
-                      
-                        self.buttons[buttonIndex].runFunction()
+                    elif pygame.key.name(event.key) == self.data['keyControl'][4]: # Enter키 
+                        self.askStart()
+                        if True:
+                          self.buttons[buttonIndex].runFunction()
+                        else:
+                          self.draw()
                 
-                # # 마우스 클릭으로 지역 선택
+                # 마우스 클릭으로 지역 선택
                 # elif event.type == pygame.MOUSEBUTTONDOWN:
                 #     mousePos = pygame.mouse.get_pos()
                 #     if self.area1Rect.collidepoint(mousePos):
@@ -1132,7 +1247,8 @@ class SingleGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
-    b = MapScreen()
+    b = AchievementScreen()
     b.run()
-    # a = SingleGameScreen('player', [ComputerPlayer('a')])
-    # a.run()
+    b = 
+    # b = MapScreen()
+    # b.run()
