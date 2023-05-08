@@ -3,7 +3,8 @@ import random
 import sys
 import time
 import datetime
-from utils.saveManager import SettingManager
+from utils.saveManager import SaveManager
+from utils.saveManager import save
 from utils.button import Button
 from utils.sound import sound
 from card import NumberCard, Deck, AbilityCard
@@ -14,8 +15,7 @@ from player import ComputerPlayerA
 
 class Screen:
     def __init__(self):
-        self.setting = SettingManager()
-        self.data = self.setting.read()
+        self.data = save.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         pygame.display.set_caption('PyUNO')
         self.running = True
@@ -136,7 +136,6 @@ class AchievementScreen(Screen):
 class MapScreen(Screen):
     def __init__(self):
         super().__init__()
-        self.setting = SettingManager()
         # self.screen = self.data['screenSize']
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
@@ -191,7 +190,7 @@ class MapScreen(Screen):
         for i in range(0, 1):
             computerList.append(ComputerPlayerA('computer' + str(i + 1)))
         SingleGameScreen('player', computerList, 'a').run()
-        self.data = self.setting.read()
+        self.data = save.read()
         self.running = False
        
     
@@ -200,7 +199,7 @@ class MapScreen(Screen):
         for i in range(0, 3):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
         SingleGameScreen('player', computerList, 'b').run()
-        self.data = self.setting.read()
+        self.data = save.read()
         self.running = False
 
     def showStageC(self):
@@ -208,7 +207,7 @@ class MapScreen(Screen):
         for i in range(0, 2):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
         SingleGameScreen('player', computerList, 'c').run()
-        self.data = self.setting.read()
+        self.data = save.read()
         self.running = False
 
     def showStageD(self):
@@ -216,7 +215,7 @@ class MapScreen(Screen):
         for i in range(0, 1):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
         SingleGameScreen('player', computerList, 'd').run()
-        self.data = self.setting.read()
+        self.data = save.read()
         self.running = False
 
     def quit(self):
@@ -225,7 +224,7 @@ class MapScreen(Screen):
     def draw(self):
         self.screen.blit(self.mapImage, (0, 0))
         for i in range(4):
-          self.screen.blit(eval(f"self.area{i+1}Lock"), self.areas[i])
+          self.screen.blit(eval(f"self.area{i+1}"), self.areas[i])
         
         if self.data['stageClear'][0] == 'T':
           self.screen.blit(eval("self.area1"), self.areas[0])
@@ -284,11 +283,11 @@ class MapScreen(Screen):
        
                       
     # 이전 stage 깨지 못한경우 경고창              
-    def alert(self, message):
-      font = pygame.font.SysFont('Arial', 36)
-      text = font.render(message, True, (255, 0, 0))
-      self.screen.blit(text, (self.width/2 - text.get_width()/2, self.height/2 - text.get_height()/2))
-      pygame.display.update()
+    #def alert(self, message):
+    #  font = pygame.font.SysFont('Arial', 36)
+    #  text = font.render(message, True, (255, 0, 0))
+    #  self.screen.blit(text, (self.width/2 - text.get_width()/2, self.height/2 - text.get_height()/2))
+    #  pygame.display.update()
       
 
     def run(self):
@@ -403,7 +402,7 @@ class StartScreen(Screen):
     def showSetting(self):
         settingMenu = SettingScreen()
         settingMenu.run()
-        self.data = self.setting.read()
+        self.data = save.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         sound.playBackground1()
     
@@ -411,13 +410,13 @@ class StartScreen(Screen):
         inGame = LobbyScreen()
         inGame.run()
         sound.playBackground1()
-        self.data = self.setting.read()
+        self.data = save.read()
     
     def showMap(self):
         map = MapScreen()
         map.run()
         sound.playBackground1()
-        self.data = self.setting.read()
+        self.data = save.read()
     
     def run(self):
 
@@ -485,7 +484,6 @@ class StartScreen(Screen):
 class SettingScreen(Screen):
     def __init__(self):
         super().__init__()
-        self.setting = SettingManager()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
         self.font = pygame.font.SysFont('Arial', 35)
@@ -550,7 +548,7 @@ class SettingScreen(Screen):
         self.data['screenSize'] = [750, 500]
 
     def saveData(self):
-        self.setting.write(self.data)
+        save.write(self.data)
 
     def quitScreen(self):
         self.running = False
@@ -563,7 +561,7 @@ class SettingScreen(Screen):
         self.data['keyControl'][3] = 'right'
         self.data['keyControl'][4] = 'return'
         self.data['colorBlindness'] = 'off'
-        self.setting.write(self.data)
+        save.write(self.data)
 
     def run(self):
 
@@ -681,7 +679,7 @@ class LobbyScreen(Screen):
         for i in range(0, self.computerNum):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
         SingleGameScreen(self.nameText, computerList).run()
-        self.data = self.setting.read()
+        self.data = save.read()
         self.running = False
 
     def quitScreen(self):
@@ -832,7 +830,6 @@ class SingleGameScreen(Screen):
         self.tapX = 0
         self.tapY = 0
 
-        self.setting = SettingManager()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
 
@@ -840,10 +837,10 @@ class SingleGameScreen(Screen):
         self.escButtons = []
 
         self.quitButton= Button(20, (self.height // 4), 160, 40, 'quit game', self.screen, self.quitScreen)
-        self.settingButton = Button(20, (self.height // 4) * 2, 100, 40, 'setting', self.screen, self.showSetting)
+        saveButton = Button(20, (self.height // 4) * 2, 100, 40, 'setting', self.screen, self.showSetting)
 
         self.escButtons.append(self.quitButton)
-        self.escButtons.append(self.settingButton)
+        self.escButtons.append(saveButton)
         
         self.buttons = []
 
@@ -858,9 +855,9 @@ class SingleGameScreen(Screen):
         self.deck.addCard(self.discard)
 
         #내 선택
-        self.tap[0] = [self.drawCardButton]
+        self.tap[0][0] = self.drawCardButton
         self.tap[1] = self.nowTurnPlayer.handsOnCard
-        self.tap[2] = [self.unoButton]
+        self.tap[2][0] = self.unoButton
 
 
         if self.stage == 'c':
@@ -1000,7 +997,7 @@ class SingleGameScreen(Screen):
     def showSetting(self):
         settingMenu = SettingScreen()
         settingMenu.run()
-        self.data = self.setting.read()
+        self.data = save.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         self.unoButton = Button(10, self.data['screenSize'][1] - 50, 100, 35, 'UNO', self.screen)
         self.drawCardButton = Button(self.data['screenSize'][0] // 4 - 80, self.data['screenSize'][1] // 3,60, 35, 'add', self.screen, self.drawCard)
@@ -1032,8 +1029,6 @@ class SingleGameScreen(Screen):
         self.deck.shuffle()
         self.nowTurnList = [self.player] + self.computerList 
         self.discard.addCard(self.deck.drawCard())
-        if isinstance(self.discard.cards[0], AbilityCard):
-            self.ability(self.discard.cards[0])
 
         self.nowTurnPlayer = self.nowTurnList[self.index % len(self.nowTurnList)]
         self.comTurnTime = pygame.time.get_ticks() + self.nowTurnPlayer.time
@@ -1247,8 +1242,6 @@ class SingleGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
-    b = AchievementScreen()
-    b.run()
-    b = 
-    # b = MapScreen()
-    # b.run()
+    a = SingleGameScreen('player', [ComputerPlayer('a')])
+    a.run()
+

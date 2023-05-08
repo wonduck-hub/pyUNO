@@ -1,6 +1,6 @@
 import random
 import pygame
-from utils.saveManager import SettingManager
+from utils.saveManager import SaveManager
 
 red = (255, 0, 0)
 green = (0, 255, 0)
@@ -24,7 +24,7 @@ class Card:
         self.height = 80  
         self.faceUp = True # 카드 뒤집어져 있는지 여부, 기본값 = back
         self.canInsert = False
-        self.data = SettingManager().read()
+        self.data = SaveManager().read()
 
         if self.data['colorBlindness'] == "on":
             self.imagePath = f"./blindness_card_image/{color}_{value}.png"
@@ -74,7 +74,7 @@ class Deck:
         self.cards = []
         self.selectedCard = None
         self.screen = screen
-        self.data = SettingManager()
+        self.data = SaveManager()
 
     def show(self, x, y):
         #self.cards[0].faceUp = False
