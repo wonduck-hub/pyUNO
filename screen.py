@@ -224,7 +224,7 @@ class MapScreen(Screen):
     def draw(self):
         self.screen.blit(self.mapImage, (0, 0))
         for i in range(4):
-          self.screen.blit(eval(f"self.area{i+1}"), self.areas[i])
+          self.screen.blit(eval(f"self.area{i+1}Lock"), self.areas[i])
         
         if self.data['stageClear'][0] == 'T':
           self.screen.blit(eval("self.area1"), self.areas[0])
@@ -1242,6 +1242,8 @@ class SingleGameScreen(Screen):
 
 if __name__ == '__main__':
     pygame.init()
-    a = SingleGameScreen('player', [ComputerPlayer('a')])
-    a.run()
+    # a = SingleGameScreen('player', [ComputerPlayer('a')])
+    # a.run()
+    b = MapScreen()
+    b.run()
 
