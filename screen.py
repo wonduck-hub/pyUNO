@@ -45,93 +45,99 @@ class AchievementList():
                       ]
   
 class AchievementScreen(Screen):
-  def __init__(self):
-      super().__init__()
-      self.achievementSystem = AchievementList()
-      self.font = pygame.font.SysFont('malgungothicsemilight', 14)
-      self.width = self.screen.get_width()
-      self.height = self.screen.get_height()
+    def __init__(self):
+        super().__init__()
+        self.achievementSystem = AchievementList()
+        self.font = pygame.font.SysFont('malgungothicsemilight', 14)
+        self.width = self.screen.get_width()
+        self.height = self.screen.get_height()
+        self.quitButton = Button(280, 20, 40, 40, "Q", self.screen, self.quitScreen)
+
+    def quitScreen(self):
+        self.running = False
           
-  def draw(self):
-    y = 50
-    for achievement in self.achievementSystem.achievements[:4]:
-      icon = pygame.transform.scale(achievement.image, (50, 50))
-      name = achievement.name
-      description = achievement.description
-      date = achievement.achievedDate
+    def draw(self):
+        y = 10
+        temp = 0
+        for achievement in self.achievementSystem.achievements[:8]:
+            icon = pygame.transform.scale(achievement.image, (50, 50))
+            name = achievement.name
+            description = achievement.description
+            date = achievement.achievedDate
 
-      # 배경 사각형
-      rect = pygame.Rect(20, y, self.width/2 - 40, self.height/4 -40)
-      pygame.draw.rect(self.screen, (255, 255, 255), rect)
+            # 배경 사각형
+            #rect = pygame.Rect(20, y, self.width/2 - 40, self.height/4 -40)
+            #pygame.draw.rect(self.screen, (255, 255, 255), rect)
 
-      # 업적 아이콘
-      self.screen.blit(icon, (25, y+20))
+            if temp == 4:
+                y = 10
 
-      # 업적 이름
-      nameText = self.font.render(name, True, (0, 0, 0))
-      self.screen.blit(nameText, (95, y+10))
+            if temp < 4:
+            # 업적 아이콘
+                self.screen.blit(icon, (15, y+20))
 
-      # 업적 설명
-      descriptionText = self.font.render(description, True, (0, 0, 0))
-      self.screen.blit(descriptionText, (95, y+35))
-      
-      if False: # 업적 달성하면
-      # 업적 달성 일자
-        #self.achievedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        dateText = self.font.render(str(date) + '에 달성됨', True, (0, 0, 0))
-      else:
-        dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
-        
-      self.screen.blit(dateText, (95, y+60))
+                # 업적 이름
+                nameText = self.font.render(name, True, (0, 0, 0))
+                self.screen.blit(nameText, (65, y+10))
 
-      y += 100
+                # 업적 설명
+                descriptionText = self.font.render(description, True, (0, 0, 0))
+                self.screen.blit(descriptionText, (65, y+35))
+                
+                if self.data["Achievement"][temp] == "T": # 업적 달성하면
+                    dateText = self.font.render('달성됨', True, (0, 0, 0))
+                else:
+                    dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
+                    
+                self.screen.blit(dateText, (65, y+60))
+            elif temp >= 4:
     
-    y = 50
-    for achievement in self.achievementSystem.achievements[4:]:
+        #y = 10
+        #for achievement in self.achievementSystem.achievements[4:]:
 
-      icon = pygame.transform.scale(achievement.image, (50, 50))
-      name = achievement.name
-      description = achievement.description
-      
-      # 배경 사각형
-      rect = pygame.Rect(self.width - 20 - (self.width/2-40), y, self.width/2 - 40, self.height/4 -40)
-      pygame.draw.rect(self.screen, (255, 255, 255), rect)
+            #icon = pygame.transform.scale(achievement.image, (50, 50))
+            #name = achievement.name
+            #description = achievement.description
+            
+            # 배경 사각형
+            #rect = pygame.Rect(self.width - 20 - (self.width/2-40), y, self.width/2 - 40, self.height/4 -40)
+            #pygame.draw.rect(self.screen, (255, 255, 255), rect)
 
-      # 업적 아이콘
-      self.screen.blit(icon, (self.width-15-(self.width/2-40), y+20))
+                # 업적 아이콘
+                self.screen.blit(icon, (325, y+20))
 
-      # 업적 이름
-      name_text = self.font.render(name, True, (0, 0, 0))
-      self.screen.blit(name_text, (self.width+55-(self.width/2-40), y+10))
+                # 업적 이름
+                name_text = self.font.render(name, True, (0, 0, 0))
+                self.screen.blit(name_text, (375, y+10))
 
-      # 업적 설명
-      description_text = self.font.render(description, True, (0, 0, 0))
-      self.screen.blit(description_text, ((self.width+55-(self.width/2-40), y+35)))
-      
-      if achievement.achieved: # 업적 달성하면
-      # 업적 달성 일자
-        self.achievedDate = datetime.now().strftime('%Y-%m-%d %H:%M')
-        dateText = self.font.render(str(date) + '에 달성됨', True, (0, 0, 0))
-      else:
-        dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
-        self.screen.blit(dateText, ((self.width+55-(self.width/2-40), y+60))) 
+                # 업적 설명
+                description_text = self.font.render(description, True, (0, 0, 0))
+                self.screen.blit(description_text, (375, y+35))
+            
+                if self.data["Achievement"][temp] == "T": # 업적 달성하면
+            # 업적 달성 일자
+                    dateText = self.font.render('달성됨', True, (0, 0, 0))
+                else:
+                    dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
+            
+                self.screen.blit(dateText, (375, y+60))
 
-      y += 100
+            y += 100
+            temp += 1
 
-  def run(self):
-    running = True
-    while running:
-      for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-          running = False
-          
-      self.screen.fill([128, 128, 128])
-      self.draw()
-          
-      
-      pygame.display.update()
+    def run(self):
+        self.running = True
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+            
+            self.screen.fill([255, 255, 255])
+            self.draw()
+            self.quitButton.process()
+            
+            pygame.display.update()
 
-    pygame.quit()
 
 class MapScreen(Screen):
     def __init__(self):
@@ -171,6 +177,8 @@ class MapScreen(Screen):
         self.stageBButton = Button(450, 50, 50, 40, 'B', self.screen, self.showStageB)
         self.stageCButton = Button(100, 200, 50, 40, 'C', self.screen, self.showStageC)
         self.stageDButton = Button(450, 250, 50, 40, 'D', self.screen, self.showStageD)
+        self.nomalButton= Button(20, 310, 100, 40, "Nomal", self.screen, self.nomal)
+        self.aButton = Button(20, 360, 100, 40, "A", self.screen, self.a)
 
         self.buttons = []
 
@@ -184,12 +192,21 @@ class MapScreen(Screen):
 
         self.quitButton = Button(15, 15, 60, 40, "quit", self.screen, self.quit)
     
+    def nomal(self):
+        self.checkUser = 'nomal'
+
+    def a(self):
+        self.checkUser = 'a'
+    
     #TODO 스테이지별 ComputerPlayer를 상속받는 객체 만들고 수정
     def showStageA(self):
         computerList = []
         for i in range(0, 1):
             computerList.append(ComputerPlayerA('computer' + str(i + 1)))
-        SingleGameScreen('player', computerList, 'a').run()
+        if self.checkUser == 'nomal':
+            SingleGameScreen(HumanPlayer('player'), computerList,'a').run()
+        elif self.checkUser == 'a':
+            SingleGameScreen(HumanPlayer('player'), computerList,'a').run()
         self.data = save.read()
         self.running = False
        
@@ -198,7 +215,10 @@ class MapScreen(Screen):
         computerList = []
         for i in range(0, 3):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
-        SingleGameScreen('player', computerList, 'b').run()
+        if self.checkUser == 'nomal':
+            SingleGameScreen(HumanPlayer('player'), computerList,'b').run()
+        elif self.checkUser == 'a':
+            SingleGameScreen(HumanPlayer('player'), computerList,'b').run()
         self.data = save.read()
         self.running = False
 
@@ -206,7 +226,10 @@ class MapScreen(Screen):
         computerList = []
         for i in range(0, 2):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
-        SingleGameScreen('player', computerList, 'c').run()
+        if self.checkUser == 'nomal':
+            SingleGameScreen(HumanPlayer('player'), computerList,'c').run()
+        elif self.checkUser == 'a':
+            SingleGameScreen(HumanPlayer('player'), computerList,'c').run()
         self.data = save.read()
         self.running = False
 
@@ -214,7 +237,10 @@ class MapScreen(Screen):
         computerList = []
         for i in range(0, 1):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
-        SingleGameScreen('player', computerList, 'd').run()
+        if self.checkUser == 'nomal':
+            SingleGameScreen(HumanPlayer('player'), computerList,'d').run()
+        elif self.checkUser == 'a':
+            SingleGameScreen(HumanPlayer('player'), computerList,'d').run()
         self.data = save.read()
         self.running = False
 
@@ -357,6 +383,8 @@ class MapScreen(Screen):
                 i += 1
             
             self.screen.blit(self.textSelect, selectPos)
+            self.nomalButton.process()
+            self.aButton.process()
             
             self.quitButton.process()
                 
@@ -393,11 +421,13 @@ class StartScreen(Screen):
         self.settingButton = Button(30, 280, 140, 40, "setting", self.screen)
         self.quitButton = Button(30, 350, 140, 40, "quit", self.screen, pygame.quit)
         self.storyButton = Button(190, 210, 140, 40, "story", self.screen)
+        self.achievementsButton = Button(190, 280, 180, 40, "achievements", self.screen)
 
         self.buttons.append(self.startButton)
         self.buttons.append(self.settingButton)
         self.buttons.append(self.quitButton)
         self.buttons.append(self.storyButton)
+        self.buttons.append(self.achievementsButton)
 
     def showSetting(self):
         settingMenu = SettingScreen()
@@ -405,6 +435,11 @@ class StartScreen(Screen):
         self.data = save.read()
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         sound.playBackground1()
+
+    def showAhiement(self):
+        achievementScreen = AchievementScreen()
+        achievementScreen.run()
+        self.data = save.read()
     
     def showInGame(self):
         inGame = LobbyScreen()
@@ -423,6 +458,7 @@ class StartScreen(Screen):
         self.settingButton.setOnClickFunction(self.showSetting)
         self.startButton.setOnClickFunction(self.showInGame)
         self.storyButton.setOnClickFunction(self.showMap)
+        self.achievementsButton.setOnClickFunction(self.showAhiement)
 
         temp = 0
         buttonIndex = 0
@@ -678,7 +714,7 @@ class LobbyScreen(Screen):
         computerList = []
         for i in range(0, self.computerNum):
             computerList.append(ComputerPlayer('computer' + str(i + 1)))
-        SingleGameScreen(self.nameText, computerList).run()
+        SingleGameScreen(HumanPlayer(self.nameText), computerList).run()
         self.data = save.read()
         self.running = False
 
@@ -804,11 +840,11 @@ class LobbyScreen(Screen):
 
 class SingleGameScreen(Screen):
     
-    def __init__(self, name, computerList, stage = None):
+    def __init__(self, player, computerList, stage = None):
         super().__init__()
         self.stage = stage
-        self.playerName = name
-        self.player = HumanPlayer(name)
+        self.playerName = player.name
+        self.player = player
         self.computerList  = []
         self.computerList = self.computerList + computerList
         self.deck = Deck(self.screen)
@@ -829,6 +865,7 @@ class SingleGameScreen(Screen):
         self.tap = []
         self.tapX = 0
         self.tapY = 0
+        self.checkUseAbility = False
 
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
@@ -903,6 +940,7 @@ class SingleGameScreen(Screen):
         self.running = False
 
     def ability(self, ability):
+        self.checkUseAbility = True
         if self.discard.cards[0].value == 'draw2':
             self.endTurn()
             self.nowTurnPlayer.addCard(self.deck.drawCard())
@@ -1130,10 +1168,23 @@ class SingleGameScreen(Screen):
                     self.data['stageClear'][2] = 'T'
                 if isinstance(self.winner, HumanPlayer) and self.stage == 'c':
                     self.data['stageClear'][3] = 'T'
+                if isinstance(self.winner, HumanPlayer) and self.stage == 'd':
+                    self.data['Achievement'][1] = 'T'
+                if self.index <= 10:
+                    self.data['Achievement'][2] = 'T'
+                if self.checkUseAbility:
+                    self.data['Achievement'][3] = 'T'
+                if len(self.computerList) == 2:
+                    self.data['Achievement'][5] = 'T'
+                if len(self.computerList) == 3:
+                    self.data['Achievement'][6] = 'T'
+                if len(self.computerList) == 4:
+                    self.data['Achievement'][7] = 'T'
                 
                 if endSound:
                     if isinstance(self.winner, HumanPlayer):
                         sound.playWinSound()
+                        self.data["Achievement"][0] = 'T'
                     elif isinstance(self.winner, ComputerPlayer):
                         sound.playLoseSound()
                     endSound = False
@@ -1153,6 +1204,7 @@ class SingleGameScreen(Screen):
                 self.screen.blit(winText, (self.data['screenSize'][0] // 2 - 150, self.data['screenSize'][1] // 3))
                 quitButton.process()
                 pygame.display.flip()
+                save.write(self.data)
 
             elif isInputEsc:
                 self.screen.fill([255, 255, 255])
