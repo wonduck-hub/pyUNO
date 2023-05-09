@@ -20,7 +20,7 @@ class Screen:
         pygame.display.set_caption('PyUNO')
         self.running = True
 
-class Achievement(Screen):
+class Achievement():
   def __init__(self, name, description, icon, achieved, achievedDate):
     super().__init__()
     self.icon = icon
@@ -30,7 +30,7 @@ class Achievement(Screen):
     self.achieved = False
     self.achievedDate = None
   
-class AchievementList(Screen):
+class AchievementList():
   def __init__(self):
     super().__init__()
     self.achievements = [
@@ -75,9 +75,9 @@ class AchievementScreen(Screen):
       descriptionText = self.font.render(description, True, (0, 0, 0))
       self.screen.blit(descriptionText, (95, y+35))
       
-      if achievement.achieved: # 업적 달성하면
+      if False: # 업적 달성하면
       # 업적 달성 일자
-        self.achievedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        #self.achievedDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         dateText = self.font.render(str(date) + '에 달성됨', True, (0, 0, 0))
       else:
         dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
