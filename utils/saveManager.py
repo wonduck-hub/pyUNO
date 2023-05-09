@@ -4,7 +4,7 @@ class SaveManager:
     def __init__(self):
         self.__filePath = './json/setting.json'
         self.__data = {'backgroundColor' : [0, 80, 0], 
-                         'screenSize' : [650, 400]}
+                         'screenSize' : [750, 450]}
         
     def status(self):
         print(self.__data)
