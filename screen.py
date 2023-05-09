@@ -1244,6 +1244,6 @@ if __name__ == '__main__':
     pygame.init()
     # a = SingleGameScreen('player', [ComputerPlayer('a')])
     # a.run()
-    b = MapScreen()
+    b = AchievementScreen()
     b.run()
 
