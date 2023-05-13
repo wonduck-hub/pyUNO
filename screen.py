@@ -422,12 +422,21 @@ class StartScreen(Screen):
         self.quitButton = Button(30, 350, 140, 40, "quit", self.screen, pygame.quit)
         self.storyButton = Button(190, 210, 140, 40, "story", self.screen)
         self.achievementsButton = Button(190, 280, 180, 40, "achievements", self.screen)
+        self.MultyButton = Button(190, 350, 140, 40, "multy", self.screen)
 
         self.buttons.append(self.startButton)
         self.buttons.append(self.settingButton)
         self.buttons.append(self.quitButton)
         self.buttons.append(self.storyButton)
         self.buttons.append(self.achievementsButton)
+        self.buttons.append(self.MultyButton)
+    
+    def showMulty(self):
+        multy = MultyPlayScreen()
+        multy.run()
+        self.data = save.read()
+        self.screen = pygame.display.set_mode(self.data['screenSize'])
+        sound.playBackground1()
 
     def showSetting(self):
         settingMenu = SettingScreen()
@@ -459,6 +468,7 @@ class StartScreen(Screen):
         self.startButton.setOnClickFunction(self.showInGame)
         self.storyButton.setOnClickFunction(self.showMap)
         self.achievementsButton.setOnClickFunction(self.showAhiement)
+        self.MultyButton.setOnClickFunction(self.showMulty)
 
         temp = 0
         buttonIndex = 0
@@ -1288,14 +1298,51 @@ class SingleGameScreen(Screen):
                 
 
                 pygame.display.flip()
-                    
 
+class MultyPlayScreen(Screen):
+    def __init__(self):
+        super().__init__()
+        self.width = self.screen.get_width()
+        self.height = self.screen.get_height()
+        self.buttons = [] 
+
+        self.hostButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3, 140, 40, "host", self.screen, self.hostScreen)
+        self.joinButton= Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3 + 60, 140, 40, "join", self.screen, self.joinScreen)
+        self.exitButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3 + 120, 140, 40, "quit", self.screen, self.quitScreen)
+
+        self.buttons.append(self.hostButton)
+        self.buttons.append(self.joinButton)
+        self.buttons.append(self.exitButton)
+    
+    def quitScreen(self):
+        self.running = False
+    
+    def hostScreen(self):
+        pass
+
+    def joinScreen(self):  
+        pass
+                    
+    def run(self):
+
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    self.running = False
+
+            self.screen.fill(self.data['backgroundColor'])
+
+            for btn in self.buttons:
+                btn.process()
+
+            pygame.display.flip()
 
 
 if __name__ == '__main__':
     pygame.init()
     # a = SingleGameScreen('player', [ComputerPlayer('a')])
     # a.run()
-    b = AchievementScreen()
+    b = MultyPlayScreen()
     b.run()
 
