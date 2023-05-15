@@ -1306,21 +1306,21 @@ class MultyPlayScreen(Screen):
         self.height = self.screen.get_height()
         self.buttons = [] 
 
-        self.hostButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3, 140, 40, "host", self.screen, self.hostScreen)
-        self.joinButton= Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3 + 60, 140, 40, "join", self.screen, self.joinScreen)
-        self.exitButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3 + 120, 140, 40, "quit", self.screen, self.quitScreen)
+        self.hostButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3, 140, 40, "host", self.screen, self.showHostScreen)
+        self.joinButton= Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3 + 60, 140, 40, "client", self.screen, self.showClientScreen)
+        self.exitButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3 + 120, 140, 40, "quit", self.screen, self.quit)
 
         self.buttons.append(self.hostButton)
         self.buttons.append(self.joinButton)
         self.buttons.append(self.exitButton)
     
-    def quitScreen(self):
+    def quit(self):
         self.running = False
     
-    def hostScreen(self):
+    def showHostScreen(self):
         pass
 
-    def joinScreen(self):  
+    def showClientScreen(self):  
         pass
                     
     def run(self):
