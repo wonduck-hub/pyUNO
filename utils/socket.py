@@ -1,6 +1,5 @@
 import socket
 import threading
-
 import asyncio
 
 class Server:
@@ -58,6 +57,7 @@ class Client:
         self.host = host
 
     def connect(self):
+        print("start connect...")
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((self.host, self.port))
         print("Connected to server.")

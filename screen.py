@@ -1365,10 +1365,12 @@ class hostScreen(Screen):
         self.quitButton = Button(30, self.data['screenSize'][1] - 70, 140, 40, 'quit', self.screen, self.quit)
         self.addButton = Button(180, self.data['screenSize'][1] - 70, 140, 40, 'add', self.screen, self.addComputer)
         self.delButton = Button(330, self.data['screenSize'][1] - 70, 140, 40, 'del', self.screen, self.delComputer)
+        self.startButton = Button(30, self.data['screenSize'][1] - 130, 140, 40, 'start', self.screen, self.start)
 
         self.buttons.append(self.quitButton)
         self.buttons.append(self.addButton)
         self.buttons.append(self.delButton)
+        self.buttons.append(self.startButton)
 
         self.font = pygame.font.Font(None, 32)
         self.rect = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, 0], [self.data['screenSize'][0], self.data['screenSize'][1]])
@@ -1380,6 +1382,9 @@ class hostScreen(Screen):
         self.inputBox = pygame.Rect(30, self.data['screenSize'][1] // 5 - 40, 140, 32)
         self.inputBoxPassword = pygame.Rect(30, self.data['screenSize'][1] // 5 + 40, 140, 32)
     
+    def start(self):
+        pass
+
     def addComputer(self):
         if self.insertCoutn < 5:
             self.players.append(ComputerPlayer('computer' + str(self.insertCoutn)))
@@ -1470,7 +1475,7 @@ class ClientScreen(Screen):
     def __init__(self):
         super().__init__()
         self.font = pygame.font.Font(None, 32)
-        self.inputText = '127.0.0.1'
+        self.inputText = '172.30.1.58'
         self.inputBox = pygame.Rect(30, self.data['screenSize'][1] // 5 - 40, 140, 32)
 
         self.connectButton = Button(30, self.data['screenSize'][1] // 5 * 4, 140, 40, 'connect', self.screen, self.connect)
