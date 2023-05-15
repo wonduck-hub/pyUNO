@@ -7,12 +7,18 @@ import datetime
 from utils.saveManager import SaveManager
 from utils.saveManager import save
 from utils.button import Button
+from utils.socket import Server, Client
 from utils.sound import sound
 from card import NumberCard, Deck, AbilityCard
 from player import HumanPlayer
 from player import ComputerPlayer
 from player import DiscardPile
 from player import ComputerPlayerA
+
+hostName = socket.gethostname()
+ip = socket.gethostbyname(hostName)
+server = Server(ip)
+client = Client()
 
 class Screen:
     def __init__(self):
@@ -1326,7 +1332,8 @@ class MultyPlayScreen(Screen):
         host.run()
 
     def showClientScreen(self):  
-        pass
+        client = ClientScreen()
+        client.run()
                     
     def run(self):
 
@@ -1345,13 +1352,12 @@ class MultyPlayScreen(Screen):
 
 class hostScreen(Screen):
     def __init__(self):
-        super().__init__();
+        super().__init__()
         self.width = self.screen.get_width()
         self.height = self.screen.get_height()
         self.nameText = 'player'
         self.password = ''
-        self.hostName = socket.gethostname()
-        self.ip = socket.gethostbyname(self.hostName)
+        self.ip = socket.gethostbyname(hostName)
         self.insertCoutn = 1
         self.players = []
         self.buttons = [] 
@@ -1390,6 +1396,8 @@ class hostScreen(Screen):
         color = color_inactive
         active = False
         activeP = False
+
+        server.start()
 
         while self.running:
             for event in pygame.event.get():
@@ -1437,7 +1445,6 @@ class hostScreen(Screen):
             # Blit the input_box rect.
             pygame.draw.rect(self.screen, color, self.inputBox, 2)
 
-            #이름 입력 칸
             txt_surfaceP = self.font.render(self.password, True, color)
             widthPassword = max(200, txt_surfaceP.get_width()+10)
             self.inputBoxPassword.w = widthPassword
@@ -1456,9 +1463,71 @@ class hostScreen(Screen):
                     self.screen.blit(self.noneText, ((self.data['screenSize'][0] // 5) * 4, (self.data['screenSize'][1] // 5) * (i + 1)))
 
             pygame.display.flip()
+        
+        server.stop()
+
+class ClientScreen(Screen):
+    def __init__(self):
+        super().__init__()
+        self.font = pygame.font.Font(None, 32)
+        self.inputText = '127.0.0.1'
+        self.inputBox = pygame.Rect(30, self.data['screenSize'][1] // 5 - 40, 140, 32)
+
+        self.connectButton = Button(30, self.data['screenSize'][1] // 5 * 4, 140, 40, 'connect', self.screen, self.connect)
+
+        self.buttons = [] 
+        self.buttons.append(self.connectButton)
+
+    def connect(self):
+        client.connect()
+    
+    def run(self):
+
+        color_inactive = pygame.Color('lightskyblue3')
+        color = color_inactive
+        active = False
+        client.host = self.inputText
+
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    self.running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    # If the user clicked on the input_box rect.
+                    if self.inputBox.collidepoint(event.pos):
+                        # Toggle the active variable.
+                        active = not active
+                    else:
+                        active = False
+                if event.type == pygame.KEYDOWN:
+                    if active:
+                        if event.key == pygame.K_BACKSPACE:
+                            self.inputText = self.inputText[:-1]
+                            client.host = self.inputText
+                        else:
+                            self.inputText += event.unicode
+                            client.host = self.inputText
+
+            self.screen.fill(self.data['backgroundColor'])
+
+            for btn in self.buttons:
+                btn.process()
+
+            #IP 입력 칸
+            txt_surface = self.font.render(self.inputText, True, color)
+            width = max(200, txt_surface.get_width()+10)
+            self.inputBox.w = width
+            # Blit the text.
+            self.screen.blit(txt_surface, (self.inputBox.x+5, self.inputBox.y+5))
+            # Blit the input_box rect.
+            pygame.draw.rect(self.screen, color, self.inputBox, 2)
+
+
+            pygame.display.flip()
 
 if __name__ == '__main__':
     pygame.init()
-    b = hostScreen()
+    b = MultyPlayScreen()
     b.run()
 
