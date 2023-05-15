@@ -1,5 +1,6 @@
 import pygame
 import random
+import socket
 import sys
 import time
 import datetime
@@ -19,6 +20,9 @@ class Screen:
         self.screen = pygame.display.set_mode(self.data['screenSize'])
         pygame.display.set_caption('PyUNO')
         self.running = True
+
+    def quit(self):
+        self.running = False
 
 class Achievement():
   def __init__(self, name, description, icon, achieved, achievedDate):
@@ -1306,19 +1310,20 @@ class MultyPlayScreen(Screen):
         self.height = self.screen.get_height()
         self.buttons = [] 
 
-        self.hostButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3, 140, 40, "host", self.screen, self.showHostScreen)
+        self.serverButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3, 140, 40, "server", self.screen, self.showServerScreen)
         self.joinButton= Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3 + 60, 140, 40, "client", self.screen, self.showClientScreen)
         self.exitButton = Button(self.data['screenSize'][0] // 2, self.data['screenSize'][1] // 3 + 120, 140, 40, "quit", self.screen, self.quit)
 
-        self.buttons.append(self.hostButton)
+        self.buttons.append(self.serverButton)
         self.buttons.append(self.joinButton)
         self.buttons.append(self.exitButton)
     
     def quit(self):
         self.running = False
     
-    def showHostScreen(self):
-        pass
+    def showServerScreen(self):
+        host = hostScreen()
+        host.run()
 
     def showClientScreen(self):  
         pass
@@ -1338,11 +1343,122 @@ class MultyPlayScreen(Screen):
 
             pygame.display.flip()
 
+class hostScreen(Screen):
+    def __init__(self):
+        super().__init__();
+        self.width = self.screen.get_width()
+        self.height = self.screen.get_height()
+        self.nameText = 'player'
+        self.password = ''
+        self.hostName = socket.gethostname()
+        self.ip = socket.gethostbyname(self.hostName)
+        self.insertCoutn = 1
+        self.players = []
+        self.buttons = [] 
+
+        self.quitButton = Button(30, self.data['screenSize'][1] - 70, 140, 40, 'quit', self.screen, self.quit)
+        self.addButton = Button(180, self.data['screenSize'][1] - 70, 140, 40, 'add', self.screen, self.addComputer)
+        self.delButton = Button(330, self.data['screenSize'][1] - 70, 140, 40, 'del', self.screen, self.delComputer)
+
+        self.buttons.append(self.quitButton)
+        self.buttons.append(self.addButton)
+        self.buttons.append(self.delButton)
+
+        self.font = pygame.font.Font(None, 32)
+        self.rect = pygame.Rect([(self.data['screenSize'][0] // 4) * 3 + 2, 0], [self.data['screenSize'][0], self.data['screenSize'][1]])
+        self.ipText = self.font.render("IP : " + self.ip, True, (255, 255, 255)) 
+        self.hostText = self.font.render("host", True, (255, 255, 255)) 
+        self.noneText = self.font.render('none', True, (255, 255, 255)) 
+        self.computerText = self.font.render('computer', True, (255, 255, 255)) 
+        self.passwordText= self.font.render('password', True, (255, 255, 255)) 
+        self.inputBox = pygame.Rect(30, self.data['screenSize'][1] // 5 - 40, 140, 32)
+        self.inputBoxPassword = pygame.Rect(30, self.data['screenSize'][1] // 5 + 40, 140, 32)
+    
+    def addComputer(self):
+        if self.insertCoutn < 5:
+            self.players.append(ComputerPlayer('computer' + str(self.insertCoutn)))
+            self.insertCoutn += 1
+    
+    def delComputer(self):
+        if self.insertCoutn > 1:
+            self.players.pop()
+            self.insertCoutn -= 1
+    
+    def run(self):
+
+        color_inactive = pygame.Color('lightskyblue3')
+        color = color_inactive
+        active = False
+        activeP = False
+
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    self.running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    # If the user clicked on the input_box rect.
+                    if self.inputBox.collidepoint(event.pos):
+                        # Toggle the active variable.
+                        active = not active
+                    else:
+                        active = False
+                    if self.inputBoxPassword.collidepoint(event.pos):
+                        activeP = not active
+                    else:
+                        activeP = False
+                if event.type == pygame.KEYDOWN:
+                    if active:
+                        if event.key == pygame.K_BACKSPACE:
+                            self.nameText = self.nameText[:-1]
+                        else:
+                            self.nameText += event.unicode
+                    if activeP:
+                        if event.key == pygame.K_BACKSPACE:
+                            self.password = self.password[:-1]
+                        else:
+                            self.password += event.unicode
+
+            self.screen.fill(self.data['backgroundColor'])
+            pygame.draw.rect(self.screen, [30, 30, 30], self.rect)
+
+            for btn in self.buttons:
+                btn.process()
+
+            self.screen.blit(self.ipText, (30, self.data['screenSize'][1] // 5))
+            self.screen.blit(self.passwordText, (260, self.data['screenSize'][1] // 5 + 40))
+            
+            #이름 입력 칸
+            txt_surface = self.font.render(self.nameText, True, color)
+            width = max(200, txt_surface.get_width()+10)
+            self.inputBox.w = width
+            # Blit the text.
+            self.screen.blit(txt_surface, (self.inputBox.x+5, self.inputBox.y+5))
+            # Blit the input_box rect.
+            pygame.draw.rect(self.screen, color, self.inputBox, 2)
+
+            #이름 입력 칸
+            txt_surfaceP = self.font.render(self.password, True, color)
+            widthPassword = max(200, txt_surfaceP.get_width()+10)
+            self.inputBoxPassword.w = widthPassword
+            # Blit the text.
+            self.screen.blit(txt_surfaceP, (self.inputBoxPassword.x+5, self.inputBoxPassword.y+5))
+            # Blit the input_box rect.
+            pygame.draw.rect(self.screen, color, self.inputBoxPassword, 2)
+
+            #오른쪽 플레이어 확인
+            self.screen.blit(self.hostText, ((self.data['screenSize'][0] // 5) * 4, 10))
+            for i in range(0,4):
+                if i < len(self.players):
+                    if isinstance(self.players[i], ComputerPlayer):
+                        self.screen.blit(self.computerText, ((self.data['screenSize'][0] // 5) * 4, (self.data['screenSize'][1] // 5) * (i + 1)))
+                else:
+                    self.screen.blit(self.noneText, ((self.data['screenSize'][0] // 5) * 4, (self.data['screenSize'][1] // 5) * (i + 1)))
+
+            pygame.display.flip()
 
 if __name__ == '__main__':
     pygame.init()
-    # a = SingleGameScreen('player', [ComputerPlayer('a')])
-    # a.run()
-    b = MultyPlayScreen()
+    b = hostScreen()
     b.run()
 
