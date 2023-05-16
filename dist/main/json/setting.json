@@ -1,0 +1,35 @@
+{
+    "backgroundColor": [
+        0,
+        80,
+        0
+    ],
+    "screenSize": [
+        750,
+        500
+    ],
+    "keyControl": [
+        "up",
+        "down",
+        "left",
+        "right",
+        "return"
+    ],
+    "stageClear": [
+        "T",
+        "F",
+        "F",
+        "F"
+    ],
+    "colorBlindness": "off",
+    "Achievement": [
+        "F",
+        "F",
+        "F",
+        "F",
+        "F",
+        "F",
+        "F",
+        "F"
+    ]
+}

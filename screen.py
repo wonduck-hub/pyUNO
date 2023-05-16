@@ -11,6 +11,7 @@ from utils.socket import Server, Client
 from utils.sound import sound
 from card import NumberCard, Deck, AbilityCard
 from player import HumanPlayer
+from player import HumanPlayerA
 from player import ComputerPlayer
 from player import DiscardPile
 from player import ComputerPlayerA
@@ -201,6 +202,7 @@ class MapScreen(Screen):
         self.textSelect = self.smallFont.render("[v]", True, (0, 0, 100))
 
         self.quitButton = Button(15, 15, 60, 40, "quit", self.screen, self.quit)
+        self.checkUser = 'nomal'
     
     def nomal(self):
         self.checkUser = 'nomal'
@@ -216,7 +218,7 @@ class MapScreen(Screen):
         if self.checkUser == 'nomal':
             SingleGameScreen(HumanPlayer('player'), computerList,'a').run()
         elif self.checkUser == 'a':
-            SingleGameScreen(HumanPlayer('player'), computerList,'a').run()
+            SingleGameScreen(HumanPlayerA('player'), computerList,'a').run()
         self.data = save.read()
         self.running = False
        
@@ -228,7 +230,7 @@ class MapScreen(Screen):
         if self.checkUser == 'nomal':
             SingleGameScreen(HumanPlayer('player'), computerList,'b').run()
         elif self.checkUser == 'a':
-            SingleGameScreen(HumanPlayer('player'), computerList,'b').run()
+            SingleGameScreen(HumanPlayerA('player'), computerList,'b').run()
         self.data = save.read()
         self.running = False
 
@@ -239,7 +241,7 @@ class MapScreen(Screen):
         if self.checkUser == 'nomal':
             SingleGameScreen(HumanPlayer('player'), computerList,'c').run()
         elif self.checkUser == 'a':
-            SingleGameScreen(HumanPlayer('player'), computerList,'c').run()
+            SingleGameScreen(HumanPlayerA('player'), computerList,'c').run()
         self.data = save.read()
         self.running = False
 
@@ -250,7 +252,7 @@ class MapScreen(Screen):
         if self.checkUser == 'nomal':
             SingleGameScreen(HumanPlayer('player'), computerList,'d').run()
         elif self.checkUser == 'a':
-            SingleGameScreen(HumanPlayer('player'), computerList,'d').run()
+            SingleGameScreen(HumanPlayerA('player'), computerList,'d').run()
         self.data = save.read()
         self.running = False
 
@@ -1479,9 +1481,11 @@ class ClientScreen(Screen):
         self.inputBox = pygame.Rect(30, self.data['screenSize'][1] // 5 - 40, 140, 32)
 
         self.connectButton = Button(30, self.data['screenSize'][1] // 5 * 4, 140, 40, 'connect', self.screen, self.connect)
+        self.quitButton = Button(180, self.data['screenSize'][1] // 5 * 4, 140, 40, 'quit', self.screen, self.quit)
 
         self.buttons = [] 
         self.buttons.append(self.connectButton)
+        self.buttons.append(self.quitButton)
 
     def connect(self):
         client.connect()
