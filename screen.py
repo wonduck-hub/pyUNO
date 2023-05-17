@@ -15,6 +15,7 @@ from player import HumanPlayerA
 from player import ComputerPlayer
 from player import DiscardPile
 from player import ComputerPlayerA
+from datetime import datetime
 
 hostName = socket.gethostname()
 ip = socket.gethostbyname(hostName)
@@ -95,8 +96,8 @@ class AchievementScreen(Screen):
                 descriptionText = self.font.render(description, True, (0, 0, 0))
                 self.screen.blit(descriptionText, (65, y+35))
                 
-                if self.data["Achievement"][temp] == "T": # 업적 달성하면
-                    dateText = self.font.render('달성됨', True, (0, 0, 0))
+                if self.data["Achievement"][temp][0] == "T": # 업적 달성하면
+                    dateText = self.font.render('달성됨' + self.data['Achievement'][temp][1], True, (0, 0, 0))
                 else:
                     dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
                     
@@ -125,9 +126,9 @@ class AchievementScreen(Screen):
                 description_text = self.font.render(description, True, (0, 0, 0))
                 self.screen.blit(description_text, (375, y+35))
             
-                if self.data["Achievement"][temp] == "T": # 업적 달성하면
+                if self.data["Achievement"][temp][0] == "T": # 업적 달성하면
             # 업적 달성 일자
-                    dateText = self.font.render('달성됨', True, (0, 0, 0))
+                    dateText = self.font.render('달성됨' + self.data['Achievement'][temp][1], True, (0, 0, 0))
                 else:
                     dateText = self.font.render('달성되지 않음', True, (0, 0, 0))
             
@@ -1183,6 +1184,8 @@ class SingleGameScreen(Screen):
 
 
             if self.haveWinner:
+                now = datetime.now()
+                #current_time = now.strftime("%H:%M:%S")
 
                 if isinstance(self.winner, HumanPlayer) and self.stage == 'a':
                     self.data['stageClear'][1] = 'T'
@@ -1191,21 +1194,35 @@ class SingleGameScreen(Screen):
                 if isinstance(self.winner, HumanPlayer) and self.stage == 'c':
                     self.data['stageClear'][3] = 'T'
                 if isinstance(self.winner, HumanPlayer) and self.stage == 'd':
-                    self.data['Achievement'][1] = 'T'
+                    if self.data['Achievement'][1][0] == 'F':
+                        self.data['Achievement'][1][1] = now.strftime("%Y-%m-%d %H:%M:%S")
+                    self.data['Achievement'][1][0] = 'T'
                 if self.index <= 10:
-                    self.data['Achievement'][2] = 'T'
+                    if self.data['Achievement'][2][0] == 'F':
+                        self.data['Achievement'][2][1] = now.strftime("%Y-%m-%d %H:%M:%S")
+                    self.data['Achievement'][2][0] = 'T'
                 if self.checkUseAbility:
-                    self.data['Achievement'][3] = 'T'
+                    if self.data['Achievement'][3][0] == 'F':
+                        self.data['Achievement'][3][1] = now.strftime("%Y-%m-%d %H:%M:%S")
+                    self.data['Achievement'][3][0] = 'T'
                 if len(self.computerList) == 2:
-                    self.data['Achievement'][5] = 'T'
+                    if self.data['Achievement'][5][0] == 'F':
+                        self.data['Achievement'][5][1] = now.strftime("%Y-%m-%d %H:%M:%S")
+                    self.data['Achievement'][5][0] = 'T'
                 if len(self.computerList) == 3:
-                    self.data['Achievement'][6] = 'T'
+                    if self.data['Achievement'][6][0] == 'F':
+                        self.data['Achievement'][6][1] = now.strftime("%Y-%m-%d %H:%M:%S")
+                    self.data['Achievement'][6][0] = 'T'
                 if len(self.computerList) == 4:
-                    self.data['Achievement'][7] = 'T'
+                    if self.data['Achievement'][7][0] == 'F':
+                        self.data['Achievement'][7][1] = now.strftime("%Y-%m-%d %H:%M:%S")
+                    self.data['Achievement'][7][0] = 'T'
                 
                 if endSound:
                     if isinstance(self.winner, HumanPlayer):
                         sound.playWinSound()
+                        if self.data['Achievement'][0][0] == 'F':
+                            self.data['Achievement'][0][1] = now.strftime("%Y-%m-%d %H:%M:%S")
                         self.data["Achievement"][0] = 'T'
                     elif isinstance(self.winner, ComputerPlayer):
                         sound.playLoseSound()
